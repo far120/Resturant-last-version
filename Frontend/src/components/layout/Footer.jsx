@@ -1,87 +1,121 @@
-import { FaFacebookF, FaLinkedinIn, FaTwitter } from "react-icons/fa";
-import { FiArrowUpRight } from "react-icons/fi";
+import { FaFacebookF, FaInstagram, FaTwitter, FaUtensils } from "react-icons/fa";
+import { FiArrowUpRight, FiClock, FiMapPin, FiPhone } from "react-icons/fi";
 import { Link } from "react-router-dom";
 
 export default function Footer() {
   return (
-    <footer className="bg-[linear-gradient(90deg,#2f3792_0%,#1f2350_100%)] text-[#d8dbef]">
-      <div className="max-w-6xl mx-auto px-6 py-10 grid gap-8 md:grid-cols-3">
+    <footer className="border-t border-amber-900/30 bg-zinc-950 text-zinc-400">
+      <div className="mx-auto max-w-7xl px-6 py-12 grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
         
-        {/* Logo / About */}
-        <div>
-              <Link to="/">
-  <svg viewBox="0 0 680 420" width="110" height="68" xmlns="http://www.w3.org/2000/svg">
-    <polygon points="340,38 435,90 435,194 340,246 245,194 245,90" fill="#ffffff" opacity="0.06"/>
-    <polygon points="340,50 423,98 423,186 340,234 257,186 257,98" fill="none" stroke="#ffffff" strokeWidth="2.5" opacity="0.35"/>
-    <text x="340" y="168" textAnchor="middle" fontFamily="monospace" fontSize="76" fontWeight="700" fill="#ffffff" letterSpacing="-2" opacity="0.95">MF</text>
-    <circle cx="340" cy="206" r="4" fill="#EF9F27"/>
-    <text x="340" y="278" textAnchor="middle" fontFamily="'Segoe UI', sans-serif" fontSize="21" fontWeight="500" fill="#ffffff" letterSpacing="6">MOSTAFA ELFAR</text>
-    <line x1="230" y1="293" x2="450" y2="293" stroke="#EF9F27" strokeWidth="1.5"/>
-    <text x="340" y="318" textAnchor="middle" fontFamily="'Segoe UI', sans-serif" fontSize="12.5" fontWeight="400" fill="#a0a8e8" letterSpacing="3">MERN STACK DEVELOPER</text>
-  </svg>
-</Link>
-          <p className="text-sm text-[#c4cae9]">
-            Premium restaurant ordering platform with real-time menu, reviews, and admin control.
+        {/* Brand & Mission */}
+        <div className="space-y-4">
+          <Link to="/" className="flex items-center gap-3 group">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-tr from-amber-600 to-amber-400 text-zinc-950 shadow-md shadow-amber-500/20">
+              <FaUtensils className="text-lg" />
+            </div>
+            <div className="flex flex-col">
+              <span className="text-lg font-black tracking-tight text-white font-serif flex items-center gap-1">
+                SAVORIA <span className="text-amber-500 text-[10px] font-sans tracking-widest font-bold">• KITCHEN</span>
+              </span>
+              <span className="text-[9px] tracking-widest uppercase text-amber-400/80 font-medium">
+                Gourmet Dining & Delivery
+              </span>
+            </div>
+          </Link>
+          <p className="text-sm leading-relaxed text-zinc-400">
+            Crafting memorable culinary experiences with fresh organic ingredients, master craftsmanship, and swift table-side or doorstep delivery.
           </p>
+          <div className="flex gap-3 pt-2">
+            <a href="#" aria-label="Instagram" className="flex h-9 w-9 items-center justify-center rounded-xl border border-zinc-800 bg-zinc-900 text-zinc-400 hover:text-amber-400 hover:border-amber-500/40 transition">
+              <FaInstagram />
+            </a>
+            <a href="#" aria-label="Facebook" className="flex h-9 w-9 items-center justify-center rounded-xl border border-zinc-800 bg-zinc-900 text-zinc-400 hover:text-amber-400 hover:border-amber-500/40 transition">
+              <FaFacebookF />
+            </a>
+            <a href="#" aria-label="Twitter" className="flex h-9 w-9 items-center justify-center rounded-xl border border-zinc-800 bg-zinc-900 text-zinc-400 hover:text-amber-400 hover:border-amber-500/40 transition">
+              <FaTwitter />
+            </a>
+          </div>
         </div>
 
-        {/* Links */}
+        {/* Quick Links */}
         <div>
-          <h3 className="text-white font-semibold mb-3">
-            Quick Links
+          <h3 className="text-white font-bold text-sm uppercase tracking-wider mb-4 border-l-2 border-amber-500 pl-2">
+            Quick Navigation
           </h3>
-          <ul className="space-y-2 text-sm">
+          <ul className="space-y-2.5 text-sm">
             <li>
-              <Link to="/" className="inline-flex items-center gap-2 hover:text-white">
-                Home <FiArrowUpRight />
+              <Link to="/" className="inline-flex items-center gap-1.5 hover:text-amber-400 transition">
+                <span>Home Page</span> <FiArrowUpRight className="text-xs text-amber-500" />
               </Link>
             </li>
             <li>
-              <Link to="/login" className="inline-flex items-center gap-2 hover:text-white">
-                Login <FiArrowUpRight />
+              <Link to="/menu" className="inline-flex items-center gap-1.5 hover:text-amber-400 transition">
+                <span>Browse Menu</span> <FiArrowUpRight className="text-xs text-amber-500" />
               </Link>
             </li>
             <li>
-              <Link to="/menu" className="inline-flex items-center gap-2 hover:text-white">
-                Menu <FiArrowUpRight />
+              <Link to="/orders" className="inline-flex items-center gap-1.5 hover:text-amber-400 transition">
+                <span>Your Orders & Cart</span> <FiArrowUpRight className="text-xs text-amber-500" />
               </Link>
             </li>
             <li>
-              <Link to="/orders" className="inline-flex items-center gap-2 hover:text-white">
-                Orders <FiArrowUpRight />
-              </Link>
-            </li>
-            <li>
-              <Link to="/admin/dashboard" className="inline-flex items-center gap-2 hover:text-white">
-                Admin Dashboard <FiArrowUpRight />
+              <Link to="/reviews" className="inline-flex items-center gap-1.5 hover:text-amber-400 transition">
+                <span>Guest Reviews</span> <FiArrowUpRight className="text-xs text-amber-500" />
               </Link>
             </li>
           </ul>
         </div>
 
-        {/* Social */}
+        {/* Contact Info */}
         <div>
-          <h3 className="text-white font-semibold mb-3">
-            Follow Us
+          <h3 className="text-white font-bold text-sm uppercase tracking-wider mb-4 border-l-2 border-amber-500 pl-2">
+            Contact & Location
           </h3>
-          <div className="flex gap-3 text-sm">
-            <a href="#" aria-label="Facebook" className="rounded-full bg-[#2a2f68] p-2.5 text-white transition hover:bg-[#ff2f74]">
-              <FaFacebookF />
-            </a>
-            <a href="#" aria-label="Twitter" className="rounded-full bg-[#2a2f68] p-2.5 text-white transition hover:bg-[#ff2f74]">
-              <FaTwitter />
-            </a>
-            <a href="#" aria-label="LinkedIn" className="rounded-full bg-[#2a2f68] p-2.5 text-white transition hover:bg-[#ff2f74]">
-              <FaLinkedinIn />
-            </a>
+          <ul className="space-y-3 text-sm">
+            <li className="flex items-start gap-2.5">
+              <FiMapPin className="text-amber-400 text-base shrink-0 mt-0.5" />
+              <span>124 Gourmet Boulevard, Culinary District, CA 90210</span>
+            </li>
+            <li className="flex items-center gap-2.5">
+              <FiPhone className="text-amber-400 text-base shrink-0" />
+              <span>+1 (800) 555-SAVOR</span>
+            </li>
+            <li className="flex items-center gap-2.5">
+              <FiClock className="text-amber-400 text-base shrink-0" />
+              <span>Daily: 11:00 AM - 11:00 PM</span>
+            </li>
+          </ul>
+        </div>
+
+        {/* Newsletter / Reservation */}
+        <div className="space-y-4">
+          <h3 className="text-white font-bold text-sm uppercase tracking-wider border-l-2 border-amber-500 pl-2">
+            Reserve & Special Offers
+          </h3>
+          <p className="text-sm text-zinc-400">
+            Subscribe for chef updates, seasonal tasting menus, and secret discounts.
+          </p>
+          <div className="flex gap-2">
+            <input
+              type="email"
+              placeholder="Your email address..."
+              className="w-full rounded-xl border border-zinc-800 bg-zinc-900 px-3.5 py-2 text-sm text-white placeholder-zinc-500 outline-none focus:border-amber-500/50"
+            />
+            <button
+              type="button"
+              className="rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 px-4 py-2 text-xs font-bold text-zinc-950 hover:brightness-110 shrink-0"
+            >
+              Join
+            </button>
           </div>
         </div>
 
       </div>
 
-      {/* Bottom */}
-      <div className="border-t border-[#3f478f] text-center text-sm py-4 text-[#c4cae9]">
-        © {new Date().getFullYear()} TasteCraft. All rights reserved.
+      {/* Copyright Bar */}
+      <div className="border-t border-zinc-900 text-center text-xs py-5 text-zinc-500">
+        © {new Date().getFullYear()} Savoria Kitchen & Dining. All rights reserved. Built with excellence.
       </div>
     </footer>
   );

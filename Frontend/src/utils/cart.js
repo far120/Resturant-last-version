@@ -124,11 +124,16 @@ export function clearCart() {
 }
 
 export function getCartTotals(items = readCart()) {
-  const itemsCount = items.reduce((acc, item) => acc + item.quantity, 0);
-  const totalAmount = items.reduce((acc, item) => acc + item.quantity * item.price, 0);
+  const safeItems = Array.isArray(items) ? items : [];
+  const itemsCount = safeItems.reduce((acc, item) => acc + toPositiveNumber(item?.quantity), 0);
+  const totalAmount = safeItems.reduce(
+    (acc, item) => acc + toPositiveNumber(item?.quantity) * toPositiveNumber(item?.price),
+    0
+  );
 
   return {
     itemsCount,
     totalAmount,
+    subtotal: totalAmount,
   };
 }

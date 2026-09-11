@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { FiArrowRight, FiBarChart2, FiClock, FiPackage, FiShield, FiUsers } from "react-icons/fi";
+import { FiArrowRight, FiBarChart2, FiClock, FiGrid, FiList, FiPackage, FiShield, FiShoppingBag, FiUsers } from "react-icons/fi";
 import Error from "../../../components/ui/Erorr";
 import Spinner from "../../../components/ui/Spinner";
 import { useAuth } from "../../auth/hooks/useAuth";
@@ -7,129 +7,175 @@ import { useAuth } from "../../auth/hooks/useAuth";
 export default function AdminDashboard() {
   const { isAdmin, isManager } = useAuth();
   return (
-    <div className="min-h-screen bg-[radial-gradient(circle_at_top_left,#111827_0%,#1f2937_42%,#334155_100%)] px-4 py-10 sm:py-16">
-      <section className="mx-auto w-full max-w-7xl rounded-4xl border border-white/10 bg-[linear-gradient(135deg,rgba(255,255,255,0.95)_0%,rgba(250,250,255,0.88)_54%,rgba(236,248,255,0.9)_100%)] p-6 shadow-[0_30px_90px_rgba(15,23,42,0.42)] backdrop-blur sm:p-10">
-        <div className="grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
-          <article className="rounded-3xl border border-slate-200 bg-white/80 p-6 shadow-[0_18px_50px_rgba(15,23,42,0.08)]">
-            <p className="inline-flex rounded-full border border-slate-200 bg-slate-950 px-4 py-1 text-xs font-bold uppercase tracking-[0.22em] text-white">
-              Admin Hub
-            </p>
-            <h1 className="mt-4 text-4xl font-black tracking-tight text-slate-950 sm:text-5xl">
-              Choose the right dashboard.
-            </h1>
-            <p className="mt-4 max-w-2xl text-sm leading-6 text-slate-600 sm:text-base">
-              Split the administration experience into two clear operating rooms: commerce for products and orders,
-              and people for users and activity logs.
-            </p>
+    <div className="min-h-screen bg-zinc-950 text-zinc-100 font-sans px-4 py-10 sm:py-16 selection:bg-amber-500 selection:text-zinc-950">
+      <section className="mx-auto w-full max-w-7xl">
+        
+        {/* Title Header */}
+        <div className="mb-10 rounded-3xl border border-zinc-800 bg-zinc-900/90 p-6 shadow-2xl backdrop-blur sm:p-8">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+              <div className="inline-flex items-center gap-2 rounded-full border border-amber-500/30 bg-amber-500/10 px-4 py-1 text-xs font-bold uppercase tracking-widest text-amber-400">
+                <FiGrid />
+                <span>Executive Command Hub</span>
+              </div>
+              <h1 className="mt-2 text-3xl font-extrabold tracking-tight text-white font-serif sm:text-4xl">
+                Savoria Administration Panel
+              </h1>
+              <p className="mt-2 text-sm text-zinc-400 max-w-xl">
+                Manage restaurant operations, products, active kitchen orders, staff accounts, and system logs.
+              </p>
+            </div>
+            <div className="rounded-2xl border border-zinc-800 bg-zinc-950 px-4 py-3 text-right">
+              <span className="text-[10px] uppercase font-bold tracking-widest text-zinc-500 block">System Mode</span>
+              <span className="text-sm font-bold text-amber-400">
+                {isAdmin ? "Full Administrator" : isManager ? "Operations Manager" : "Standard User"}
+              </span>
+            </div>
+          </div>
+        </div>
 
-            <div className="mt-6 grid gap-3 sm:grid-cols-2">
+        {/* Dashboard Grid */}
+        <div className="grid gap-8 lg:grid-cols-12">
+          
+          {/* Main Quick Access Cards */}
+          <div className="lg:col-span-8 space-y-6">
+            <h2 className="text-xl font-bold text-white font-serif">Operating Rooms</h2>
+
+            <div className="grid gap-4 sm:grid-cols-2">
               {isAdmin && (
-              <Link
-                to="/admin/dashboard/products"
-                className="group rounded-2xl bg-[linear-gradient(90deg,#0f172a_0%,#1e293b_100%)] px-5 py-4 text-white shadow-[0_14px_32px_rgba(15,23,42,0.25)] transition hover:-translate-y-0.5"
-              >
-                <div className="flex items-center justify-between gap-3">
-                  <div>
-                    <p className="text-xs font-semibold uppercase tracking-[0.22em] text-sky-200">Commerce</p>
-                    <h2 className="mt-1 text-lg font-black">Products and orders</h2>
+                <Link
+                  to="/admin/dashboard/products"
+                  className="group rounded-3xl border border-zinc-800 bg-zinc-900 p-6 shadow-xl transition hover:-translate-y-1 hover:border-amber-500/40 hover:shadow-2xl"
+                >
+                  <div className="flex items-center justify-between gap-4 mb-4">
+                    <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-amber-500/10 text-amber-400 text-2xl font-bold">
+                      <FiPackage />
+                    </div>
+                    <span className="text-xs font-bold uppercase tracking-widest text-amber-500 bg-amber-500/10 px-3 py-1 rounded-full border border-amber-500/20">
+                      Commerce
+                    </span>
                   </div>
-                  <FiPackage className="text-2xl text-sky-200 transition group-hover:translate-x-1" />
-                </div>
-              </Link>
+                  <h3 className="text-xl font-bold text-white group-hover:text-amber-400 transition">
+                    Products & Orders Hub
+                  </h3>
+                  <p className="text-xs text-zinc-400 mt-2 leading-relaxed">
+                    Manage food menu listings, category taxonomies, stock inventories, and customer order statuses.
+                  </p>
+                  <div className="mt-6 flex items-center gap-2 text-xs font-bold text-amber-400 group-hover:translate-x-1 transition">
+                    <span>Open Commerce Hub</span>
+                    <FiArrowRight />
+                  </div>
+                </Link>
               )}
 
-               { isManager && (
-              <Link
-                to="/admin/dashboard/users"
-                className="group rounded-2xl bg-[linear-gradient(90deg,#1e293b_0%,#334155_100%)] px-5 py-4 text-white shadow-[0_14px_32px_rgba(15,23,42,0.22)] transition hover:-translate-y-0.5"
-              >
-                <div className="flex items-center justify-between gap-3">
-                  <div>
-                    <p className="text-xs font-semibold uppercase tracking-[0.22em] text-emerald-200">People</p>
-                    <h2 className="mt-1 text-lg font-black">Users and logs</h2>
-                  </div>
-                  <FiUsers className="text-2xl text-emerald-200 transition group-hover:translate-x-1" />
-                </div>
-              </Link>
-               )}
-            </div>
-
-            <div className="mt-6 grid gap-3 sm:grid-cols-3">
-              <div className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-4">
-                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Navigation</p>
-                <p className="mt-2 text-sm font-semibold text-slate-950">Two focused dashboards</p>
-              </div>
-              <div className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-4">
-                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Design</p>
-                <p className="mt-2 text-sm font-semibold text-slate-950">Premium global look</p>
-              </div>
-              <div className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-4">
-                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Flow</p>
-                <p className="mt-2 text-sm font-semibold text-slate-950">Less clutter, more clarity</p>
-              </div>
-            </div>
-          </article>
-
-          <article className="rounded-3xl border border-slate-200 bg-slate-950 p-6 text-white shadow-[0_18px_50px_rgba(15,23,42,0.18)]">
-            <p className="inline-flex rounded-full border border-white/10 bg-white/5 px-4 py-1 text-xs font-bold uppercase tracking-[0.22em] text-sky-200">
-              Command Overview
-            </p>
-            <div className="mt-5 grid gap-4 sm:grid-cols-2">
-               {isAdmin && (
-                <>
-              <Link
-                to="/admin/products"
-                className="rounded-2xl border border-white/10 bg-white/5 p-4 transition hover:bg-white/10"
-              >
-                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-300">Manage</p>
-                <h3 className="mt-2 text-lg font-black">Products</h3>
-              </Link>
-              <Link
-                to="/admin/orders"
-                className="rounded-2xl border border-white/10 bg-white/5 p-4 transition hover:bg-white/10"
-              >
-                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-300">Review</p>
-                <h3 className="mt-2 text-lg font-black">Orders</h3>
-              </Link>
-                </>
-               )}
               {isManager && (
-                <>
-              <Link
-                to="/admin/users"
-                className="rounded-2xl border border-white/10 bg-white/5 p-4 transition hover:bg-white/10"
-              >
-                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-300">Manage</p>
-                <h3 className="mt-2 text-lg font-black">Users</h3>
-              </Link>
-              <Link
-                to="/admin/logs"
-                className="rounded-2xl border border-white/10 bg-white/5 p-4 transition hover:bg-white/10"
-              >
-                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-300">Inspect</p>
-                <h3 className="mt-2 text-lg font-black">Logs</h3>
-              </Link>
-                </>
-                )}
+                <Link
+                  to="/admin/dashboard/users"
+                  className="group rounded-3xl border border-zinc-800 bg-zinc-900 p-6 shadow-xl transition hover:-translate-y-1 hover:border-amber-500/40 hover:shadow-2xl"
+                >
+                  <div className="flex items-center justify-between gap-4 mb-4">
+                    <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald-500/10 text-emerald-400 text-2xl font-bold">
+                      <FiUsers />
+                    </div>
+                    <span className="text-xs font-bold uppercase tracking-widest text-emerald-400 bg-emerald-500/10 px-3 py-1 rounded-full border border-emerald-500/20">
+                      Operations
+                    </span>
+                  </div>
+                  <h3 className="text-xl font-bold text-white group-hover:text-amber-400 transition">
+                    People & Logs Hub
+                  </h3>
+                  <p className="text-xs text-zinc-400 mt-2 leading-relaxed">
+                    Inspect user registration accounts, manager privileges, and system audit log activity.
+                  </p>
+                  <div className="mt-6 flex items-center gap-2 text-xs font-bold text-emerald-400 group-hover:translate-x-1 transition">
+                    <span>Open People Hub</span>
+                    <FiArrowRight />
+                  </div>
+                </Link>
+              )}
             </div>
 
-            <div className="mt-6 rounded-2xl border border-white/10 bg-[linear-gradient(135deg,rgba(96,165,250,0.18)_0%,rgba(14,165,233,0.08)_100%)] p-5">
-              <div className="flex items-center gap-3">
-                <FiBarChart2 className="text-2xl text-sky-300" />
-                <div>
-                  <p className="text-sm font-semibold text-sky-200">System posture</p>
-                  <p className="text-sm text-slate-300">Each dashboard now has a single purpose and a cleaner visual hierarchy.</p>
+            {/* Direct Shortcuts */}
+            <div className="rounded-3xl border border-zinc-800 bg-zinc-900 p-6">
+              <h3 className="text-sm font-bold text-zinc-300 uppercase tracking-wider mb-4">
+                Direct Management Links
+              </h3>
+              <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+                {isAdmin && (
+                  <>
+                    <Link
+                      to="/admin/products"
+                      className="rounded-2xl border border-zinc-800 bg-zinc-950 p-4 text-left transition hover:border-amber-500/40 hover:bg-zinc-900"
+                    >
+                      <FiShoppingBag className="text-xl text-amber-400 mb-2" />
+                      <p className="text-xs font-bold text-white">Food Dishes</p>
+                      <p className="text-[10px] text-zinc-500">Edit menu catalog</p>
+                    </Link>
+                    <Link
+                      to="/admin/orders"
+                      className="rounded-2xl border border-zinc-800 bg-zinc-950 p-4 text-left transition hover:border-amber-500/40 hover:bg-zinc-900"
+                    >
+                      <FiList className="text-xl text-sky-400 mb-2" />
+                      <p className="text-xs font-bold text-white">Live Orders</p>
+                      <p className="text-[10px] text-zinc-500">Kitchen order pipeline</p>
+                    </Link>
+                  </>
+                )}
+                {isManager && (
+                  <>
+                    <Link
+                      to="/admin/users"
+                      className="rounded-2xl border border-zinc-800 bg-zinc-950 p-4 text-left transition hover:border-amber-500/40 hover:bg-zinc-900"
+                    >
+                      <FiUsers className="text-xl text-emerald-400 mb-2" />
+                      <p className="text-xs font-bold text-white">User Accounts</p>
+                      <p className="text-[10px] text-zinc-500">Roles & permissions</p>
+                    </Link>
+                    <Link
+                      to="/admin/logs"
+                      className="rounded-2xl border border-zinc-800 bg-zinc-950 p-4 text-left transition hover:border-amber-500/40 hover:bg-zinc-900"
+                    >
+                      <FiClock className="text-xl text-purple-400 mb-2" />
+                      <p className="text-xs font-bold text-white">Audit Logs</p>
+                      <p className="text-[10px] text-zinc-500">Security history</p>
+                    </Link>
+                  </>
+                )}
+              </div>
+            </div>
+          </div>
+
+          {/* Right Status Sidebar */}
+          <div className="lg:col-span-4 space-y-6">
+            <div className="rounded-3xl border border-zinc-800 bg-zinc-900 p-6 shadow-xl">
+              <span className="text-[10px] font-bold uppercase tracking-widest text-amber-500 block mb-2">
+                System Posture
+              </span>
+              <h3 className="text-lg font-bold text-white font-serif mb-4">Operations Overview</h3>
+
+              <div className="space-y-4">
+                <div className="flex items-center gap-3 p-3.5 rounded-2xl border border-zinc-800 bg-zinc-950">
+                  <FiBarChart2 className="text-2xl text-amber-400 shrink-0" />
+                  <div>
+                    <p className="text-xs font-bold text-white">Optimized Navigation</p>
+                    <p className="text-[11px] text-zinc-400">Streamlined controls for mobile and desktop viewports.</p>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-3 p-3.5 rounded-2xl border border-zinc-800 bg-zinc-950">
+                  <FiShield className="text-2xl text-emerald-400 shrink-0" />
+                  <div>
+                    <p className="text-xs font-bold text-white">Protected Routes</p>
+                    <p className="text-[11px] text-zinc-400">Role-gated security ensures strict administrative access.</p>
+                  </div>
                 </div>
               </div>
             </div>
+          </div>
 
-            <div className="mt-6 flex items-center gap-3 text-sm text-slate-300">
-              <FiClock className="text-sky-300" />
-              <span>Optimized for quick admin access across desktop and mobile.</span>
-            </div>
-          </article>
         </div>
       </section>
     </div>
   );
 }
+

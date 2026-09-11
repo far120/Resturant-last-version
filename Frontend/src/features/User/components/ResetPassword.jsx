@@ -7,6 +7,7 @@ import { useToast } from "../../../context/ToastContext";
 import { useAuth } from "../../../features/auth/hooks/useAuth";
 import { resetMyPassword } from "../services/userApi";
 import { hasMinLength } from "../../../utils/validation";
+import { FiLock, FiShield, FiKey } from "react-icons/fi";
 
 export default function ResetPassword() {
   const navigate = useNavigate();
@@ -52,66 +53,72 @@ export default function ResetPassword() {
   }
 
   return (
-    <div className="min-h-screen bg-[radial-gradient(circle_at_top_left,#353d9a_0%,#2b307b_48%,#8453ad_100%)] px-4 py-10 sm:py-16">
-      <div className="mx-auto w-full max-w-xl rounded-3xl bg-[#f7f7fb] p-6 shadow-[0_24px_70px_rgba(19,23,79,0.38)] sm:p-10">
-        <div className="mb-8 rounded-full bg-[#dbdbe3] p-1.5 sm:w-fit">
-          <div className="rounded-full bg-[linear-gradient(90deg,#ff6a8d_0%,#ff2f74_100%)] px-8 py-3 text-center text-base font-bold text-white shadow-[0_8px_24px_rgba(255,68,135,0.45)]">
-            Reset Password
-          </div>
+    <div className="min-h-screen bg-zinc-950 flex items-center justify-center px-4 py-16 text-zinc-100 font-sans selection:bg-amber-500 selection:text-zinc-950">
+      <div className="mx-auto w-full max-w-xl rounded-3xl border border-zinc-800 bg-zinc-900/90 p-8 shadow-2xl backdrop-blur sm:p-10">
+        
+        <div className="flex justify-center mb-6">
+          <span className="inline-flex items-center gap-2 rounded-full border border-amber-500/30 bg-amber-500/10 px-4 py-1.5 text-xs font-bold uppercase tracking-widest text-amber-400">
+            <FiShield className="text-sm" />
+            Security & Authentication
+          </span>
         </div>
 
-        <h1 className="mb-3 text-center text-4xl font-extrabold tracking-wide text-[#171b3d]">
-          Change Password
+        <h1 className="mb-2 text-center text-3xl font-extrabold text-white font-serif tracking-tight sm:text-4xl">
+          Change Account Password
         </h1>
-        <p className="mb-8 text-center text-sm text-[#5a5f85] sm:text-base">
-          Enter your current password and choose a new secure password.
+        <p className="mb-8 text-center text-xs text-zinc-400 max-w-sm mx-auto leading-relaxed">
+          Enter your current security password and set a new strong password for your Savoria account.
         </p>
 
         <form onSubmit={handleSubmit} className="space-y-5">
-          <Input
-            label="Current Password"
-            type="password"
-            value={currentPassword}
-            onChange={(event) => setCurrentPassword(event.target.value)}
-            placeholder="Enter current password"
-            error={!validCurrent && currentPassword ? "At least 6 characters" : null}
-            className="w-full rounded-2xl border px-5 py-3 text-base outline-none transition border-[#d5d9eb] bg-white shadow-[0_8px_16px_rgba(58,69,131,0.12)] focus:border-[#6f7eea]"
-          />
+          <div>
+            <Input
+              label="Current Password"
+              type="password"
+              value={currentPassword}
+              onChange={(event) => setCurrentPassword(event.target.value)}
+              placeholder="Enter current password"
+              error={!validCurrent && currentPassword ? "At least 6 characters required" : null}
+              className="w-full rounded-2xl border border-zinc-800 bg-zinc-950 px-5 py-3 text-sm text-white placeholder-zinc-500 outline-none transition focus:border-amber-500/50"
+            />
+          </div>
 
-          <Input
-            label="New Password"
-            type="password"
-            value={newPassword}
-            onChange={(event) => setNewPassword(event.target.value)}
-            placeholder="At least 6 characters"
-            error={!validNew && newPassword ? "At least 6 characters" : null}
-            className="w-full rounded-2xl border px-5 py-3 text-base outline-none transition border-[#d5d9eb] bg-white shadow-[0_8px_16px_rgba(58,69,131,0.12)] focus:border-[#6f7eea]"
-          />
+          <div>
+            <Input
+              label="New Password"
+              type="password"
+              value={newPassword}
+              onChange={(event) => setNewPassword(event.target.value)}
+              placeholder="At least 6 characters"
+              error={!validNew && newPassword ? "At least 6 characters required" : null}
+              className="w-full rounded-2xl border border-zinc-800 bg-zinc-950 px-5 py-3 text-sm text-white placeholder-zinc-500 outline-none transition focus:border-amber-500/50"
+            />
+          </div>
 
-          <Input
-            label="Confirm New Password"
-            type="password"
-            value={confirmPassword}
-            onChange={(event) => setConfirmPassword(event.target.value)}
-            placeholder="Confirm new password"
-            error={!validConfirm && confirmPassword ? "Passwords do not match" : null}
-            className="w-full rounded-2xl border px-5 py-3 text-base outline-none transition border-[#d5d9eb] bg-white shadow-[0_8px_16px_rgba(58,69,131,0.12)] focus:border-[#6f7eea]"
-          />
+          <div>
+            <Input
+              label="Confirm New Password"
+              type="password"
+              value={confirmPassword}
+              onChange={(event) => setConfirmPassword(event.target.value)}
+              placeholder="Confirm new password"
+              error={!validConfirm && confirmPassword ? "Passwords do not match" : null}
+              className="w-full rounded-2xl border border-zinc-800 bg-zinc-950 px-5 py-3 text-sm text-white placeholder-zinc-500 outline-none transition focus:border-amber-500/50"
+            />
+          </div>
 
-          <div className="grid grid-cols-1 gap-3 pt-1 sm:grid-cols-2">
+          <div className="pt-4 flex flex-col gap-3 sm:flex-row sm:items-center">
+            <Submit
+              disabled={!canSubmit || loading}
+              loading={loading}
+              text="Update Password"
+              className="w-full rounded-2xl bg-gradient-to-r from-amber-500 to-amber-600 py-3.5 text-sm font-bold text-zinc-950 shadow-lg shadow-amber-500/20 transition enabled:hover:brightness-110 active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed"
+            />
             <Reset
-              title="Reset"
               disabled={!canReset || loading}
               onReset={handleReset}
-              className="rounded-2xl border border-[#cfd4ea] px-5 py-3 text-base font-semibold text-[#2a2f68] transition hover:bg-[#ecefff]"
-            />
-
-            <Submit
-              title="Update Password"
-              loading={loading}
-              disabled={!canSubmit}
-              loadingLabel="Updating..."
-              className="rounded-2xl bg-[linear-gradient(90deg,#3d3fa5_0%,#1d2146_100%)] px-5 py-3 text-base font-semibold text-white shadow-[0_12px_24px_rgba(31,35,82,0.35)] transition hover:brightness-110"
+              text="Clear Form"
+              className="w-full sm:w-auto rounded-2xl border border-zinc-800 bg-zinc-950 px-6 py-3.5 text-sm font-bold text-zinc-400 hover:border-zinc-700 hover:text-white transition disabled:opacity-40"
             />
           </div>
         </form>

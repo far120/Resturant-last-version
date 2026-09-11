@@ -186,7 +186,7 @@ export default function AdminProductsPage() {
 
   if (loading) {
     return (
-      <div className="flex min-h-[55vh] items-center justify-center">
+      <div className="flex min-h-[60vh] items-center justify-center bg-zinc-950">
         <Spinner size="lg" />
       </div>
     );
@@ -194,196 +194,231 @@ export default function AdminProductsPage() {
 
   if (error) {
     return (
-      <div className="mx-auto mt-8 max-w-6xl px-4">
+      <div className="mx-auto mt-8 max-w-5xl px-4 bg-zinc-950">
         <Error message={error.message} />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-[linear-gradient(180deg,#fff7ed_0%,#fffbeb_45%,#f8fafc_100%)] px-4 py-10">
-      <section className="mx-auto grid max-w-7xl gap-6 lg:grid-cols-[0.95fr_1.2fr]">
-        <article className="rounded-3xl border border-[#fed7aa] bg-white p-6 shadow-[0_18px_50px_rgba(194,65,12,0.16)]">
-          <h1 className="text-3xl font-black text-[#9a3412]">Admin Products</h1>
-          <p className="mt-1 text-sm text-[#c2410c]">Create and update restaurant menu items.</p>
+    <div className="min-h-screen bg-zinc-950 text-zinc-100 font-sans px-4 py-10 selection:bg-amber-500 selection:text-zinc-950">
+      <section className="mx-auto grid max-w-7xl gap-8 lg:grid-cols-12">
+        
+        {/* Left Form: Add / Edit Product */}
+        <article className="lg:col-span-5 rounded-3xl border border-zinc-800 bg-zinc-900/90 p-6 shadow-2xl backdrop-blur sm:p-8">
+          <div className="mb-6">
+            <span className="text-[10px] font-bold uppercase tracking-widest text-amber-500">Menu Catalog</span>
+            <h1 className="text-2xl font-bold text-white font-serif">{editingId ? "Edit Dish Listing" : "Add New Dish"}</h1>
+            <p className="mt-1 text-xs text-zinc-400">Configure prices, availability, stock, and dish photo.</p>
+          </div>
 
-          <form onSubmit={handleSubmit} className="mt-5 space-y-3">
-            <input
-              name="name"
-              value={form.name}
-              onChange={handleChange}
-              placeholder="Product name"
-              required
-              className="w-full rounded-xl border border-[#fdba74] bg-[#fff7ed] px-3 py-2 text-sm"
-            />
-            <textarea
-              name="description"
-              value={form.description}
-              onChange={handleChange}
-              rows={3}
-              placeholder="Description"
-              className="w-full rounded-xl border border-[#fdba74] bg-[#fff7ed] px-3 py-2 text-sm"
-            />
+          <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="mb-2 block text-sm font-semibold text-[#9a3412]">Product Image</label>
+              <label className="mb-1 block text-xs font-bold uppercase tracking-wider text-amber-500">Dish Name</label>
+              <input
+                name="name"
+                value={form.name}
+                onChange={handleChange}
+                placeholder="e.g. Truffle Ribeye Steak"
+                required
+                className="w-full rounded-2xl border border-zinc-800 bg-zinc-950 px-4 py-2.5 text-sm text-white outline-none focus:border-amber-500/50"
+              />
+            </div>
+
+            <div>
+              <label className="mb-1 block text-xs font-bold uppercase tracking-wider text-amber-500">Description</label>
+              <textarea
+                name="description"
+                value={form.description}
+                onChange={handleChange}
+                rows={3}
+                placeholder="Dish ingredients, flavor notes, preparation details..."
+                className="w-full rounded-2xl border border-zinc-800 bg-zinc-950 px-4 py-2.5 text-sm text-white outline-none focus:border-amber-500/50"
+              />
+            </div>
+
+            <div>
+              <label className="mb-1 block text-xs font-bold uppercase tracking-wider text-amber-500">Dish Photo Image</label>
               <input
                 name="image"
                 type="file"
                 accept="image/*"
                 onChange={handleImageChange}
-                className="w-full rounded-xl border border-[#fdba74] bg-[#fff7ed] px-3 py-2 text-sm"
+                className="w-full rounded-2xl border border-zinc-800 bg-zinc-950 px-4 py-2 text-xs text-zinc-300 outline-none focus:border-amber-500/50"
               />
-              <p className="mt-1 text-xs text-[#9a3412]">
-                {editingId ? "Choose a file only if you want to replace current image" : "Upload product image"}
+              <p className="mt-1 text-[11px] text-zinc-500">
+                {editingId ? "Select a new image file only if you want to replace current photo" : "Upload high quality food photo"}
               </p>
             </div>
+
             <div className="grid grid-cols-2 gap-3">
-              <input
-                name="price"
-                type="number"
-                step="0.01"
-                min={1}
-                value={form.price}
-                onChange={handleChange}
-                placeholder="Price"
-                required
-                className="rounded-xl border border-[#fdba74] bg-[#fff7ed] px-3 py-2 text-sm"
-              />
-              <input
-                name="stock"
-                type="number"
-                min={0}
-                value={form.stock}
-                onChange={handleChange}
-                placeholder="Stock"
-                required
-                className="rounded-xl border border-[#fdba74] bg-[#fff7ed] px-3 py-2 text-sm"
-              />
+              <div>
+                <label className="mb-1 block text-xs font-bold uppercase tracking-wider text-amber-500">Price ($)</label>
+                <input
+                  name="price"
+                  type="number"
+                  step="0.01"
+                  min={0.01}
+                  value={form.price}
+                  onChange={handleChange}
+                  placeholder="24.99"
+                  required
+                  className="w-full rounded-2xl border border-zinc-800 bg-zinc-950 px-4 py-2.5 text-sm text-white outline-none focus:border-amber-500/50"
+                />
+              </div>
+
+              <div>
+                <label className="mb-1 block text-xs font-bold uppercase tracking-wider text-amber-500">Stock Qty</label>
+                <input
+                  name="stock"
+                  type="number"
+                  min={0}
+                  value={form.stock}
+                  onChange={handleChange}
+                  placeholder="50"
+                  required
+                  className="w-full rounded-2xl border border-zinc-800 bg-zinc-950 px-4 py-2.5 text-sm text-white outline-none focus:border-amber-500/50"
+                />
+              </div>
             </div>
 
-            <select
-              name="category"
-              value={form.category}
-              onChange={handleChange}
-              required
-              className="w-full rounded-xl border border-[#fdba74] bg-[#fff7ed] px-3 py-2 text-sm"
-            >
-              <option value="">Select category</option>
-              {categories.map((category) => (
-                <option key={category._id} value={category._id}>
-                  {category.name}
-                </option>
-              ))}
-            </select>
+            <div>
+              <label className="mb-1 block text-xs font-bold uppercase tracking-wider text-amber-500">Category</label>
+              <select
+                name="category"
+                value={form.category}
+                onChange={handleChange}
+                required
+                className="w-full rounded-2xl border border-zinc-800 bg-zinc-950 px-4 py-2.5 text-sm font-semibold text-white outline-none focus:border-amber-500/50"
+              >
+                <option value="" className="bg-zinc-900">Select Category</option>
+                {categories.map((category) => (
+                  <option key={category._id} value={category._id} className="bg-zinc-900">
+                    {category.name}
+                  </option>
+                ))}
+              </select>
+            </div>
             
-            <select
-              name="available"
-              value={form.available}
-              onChange={handleChange}
-              className="w-full rounded-xl border border-[#fdba74] bg-[#fff7ed] px-3 py-2 text-sm"
-            >
-              <option value="true">Available</option>
-              <option value="false">Not available</option>
-            </select>
+            <div>
+              <label className="mb-1 block text-xs font-bold uppercase tracking-wider text-amber-500">Availability Status</label>
+              <select
+                name="available"
+                value={form.available}
+                onChange={handleChange}
+                className="w-full rounded-2xl border border-zinc-800 bg-zinc-950 px-4 py-2.5 text-sm font-semibold text-white outline-none focus:border-amber-500/50"
+              >
+                <option value="true" className="bg-zinc-900">Available to Order</option>
+                <option value="false" className="bg-zinc-900">Not Available (Sold Out)</option>
+              </select>
+            </div>
 
-            <p className="text-xs text-[#9a3412]">
-              Stock controls the final availability state, so set stock to `0` when the item should be unavailable.
-            </p>
-
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-2 gap-3 pt-2">
               <button
                 type="submit"
-                className="rounded-xl bg-[linear-gradient(90deg,#fb923c_0%,#ea580c_100%)] px-4 py-3 text-sm font-bold text-white"
+                className="rounded-2xl bg-gradient-to-r from-amber-500 to-amber-600 px-4 py-3 text-sm font-bold text-zinc-950 shadow-xl shadow-amber-500/20 hover:brightness-110 transition"
               >
-                {editingId ? "Update Product" : "Add Product"}
+                {editingId ? "Update Dish" : "Save Dish"}
               </button>
               <button
                 type="button"
                 onClick={resetForm}
-                className="rounded-xl border border-[#fdba74] px-4 py-3 text-sm font-semibold text-[#9a3412]"
+                className="rounded-2xl border border-zinc-800 bg-zinc-950 px-4 py-3 text-sm font-bold text-zinc-400 hover:text-white"
               >
-                Reset
+                Reset Form
               </button>
             </div>
           </form>
         </article>
 
-        <article className="rounded-3xl border border-[#fcd34d] bg-white p-6 shadow-[0_18px_50px_rgba(217,119,6,0.14)]">
-          <div className="flex flex-wrap items-center justify-between gap-3">
-            <h2 className="text-2xl font-black text-[#a16207]">Current Products</h2>
-            <div className="flex w-full flex-wrap items-center gap-2 lg:w-auto">
+        {/* Right Listing: Current Products */}
+        <article className="lg:col-span-7 rounded-3xl border border-zinc-800 bg-zinc-900/90 p-6 shadow-2xl backdrop-blur sm:p-8">
+          <div className="flex flex-wrap items-center justify-between gap-4 pb-4 border-b border-zinc-800">
+            <div>
+              <span className="text-[10px] font-bold uppercase tracking-widest text-amber-500">Live Inventory</span>
+              <h2 className="text-xl font-bold text-white font-serif">Menu Items ({filteredProducts.length})</h2>
+            </div>
+            <div className="flex flex-wrap items-center gap-2">
               <input
                 type="text"
                 value={searchTerm}
                 onChange={(event) => setSearchTerm(event.target.value)}
-                placeholder="Search product by name"
-                className="w-full rounded-xl border border-[#fbbf24] bg-[#fffbeb] px-3 py-2 text-sm lg:w-64"
+                placeholder="Search dish..."
+                className="rounded-xl border border-zinc-800 bg-zinc-950 px-3.5 py-1.5 text-xs text-white outline-none focus:border-amber-500/50"
               />
               <select
                 value={availabilityFilter}
                 onChange={(event) => setAvailabilityFilter(event.target.value)}
-                className="w-full rounded-xl border border-[#fbbf24] bg-[#fffbeb] px-3 py-2 text-sm lg:w-44"
+                className="rounded-xl border border-zinc-800 bg-zinc-950 px-3 py-1.5 text-xs font-semibold text-zinc-200 outline-none"
               >
-                <option value="all">All availability</option>
-                <option value="available">Available</option>
-                <option value="unavailable">Unavailable</option>
+                <option value="all" className="bg-zinc-900">All State</option>
+                <option value="available" className="bg-zinc-900">Available</option>
+                <option value="unavailable" className="bg-zinc-900">Unavailable</option>
               </select>
             </div>
           </div>
-          <div className="mt-5 space-y-3">
+
+          <div className="mt-6 space-y-4">
             {filteredProducts.map((product) => (
-              <div key={product._id} className="rounded-xl border border-[#fde68a] bg-[#fffbeb] p-4">
-                <div className="flex flex-wrap items-center justify-between gap-3">
-                  <div className="flex items-start gap-3">
+              <div key={product._id} className="rounded-2xl border border-zinc-800 bg-zinc-950 p-4">
+                <div className="flex flex-wrap items-center justify-between gap-4">
+                  <div className="flex items-center gap-4">
                     <img
                       src={resolveImageUrl(product.image)}
                       alt={product.name}
                       onError={(event) => {
-                        event.currentTarget.src = "https://4.imimg.com/data4/RU/VC/MY-11853389/men-s-jackets-1000x1000.jpg";
+                        event.currentTarget.src = "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=900&h=600&fit=crop&auto=format";
                       }}
-                      className="h-16 w-16 rounded-lg object-cover"
+                      className="h-16 w-16 rounded-xl object-cover border border-zinc-800"
                     />
                     <div>
-                    <p className="font-bold text-[#92400e]">{product.name}</p>
-                    <p className="text-sm text-[#a16207]">{product.description || "No description"}</p>
-                    <p className="text-xs text-[#78716c]">
-                      Category: {getCategoryName(product)}
-                    </p>
-                    <p className="mt-1 text-xs font-semibold uppercase tracking-[0.14em] text-[#b45309]">
-                      {product.available ? "Available" : "Not available"} • Stock {product.stock ?? 0}
-                    </p>
+                      <h3 className="font-bold text-white text-base">{product.name}</h3>
+                      <p className="text-xs text-zinc-400 mt-0.5 line-clamp-1">{product.description || "No description"}</p>
+                      <div className="flex items-center gap-3 mt-1.5 text-[11px] font-semibold">
+                        <span className="text-amber-500 uppercase tracking-wider">{getCategoryName(product)}</span>
+                        <span className="text-zinc-600">•</span>
+                        <span className={product.available ? "text-emerald-400" : "text-rose-400"}>
+                          {product.available ? "Available" : "Sold Out"}
+                        </span>
+                        <span className="text-zinc-600">•</span>
+                        <span className="text-zinc-400">Stock: {product.stock ?? 0}</span>
+                      </div>
                     </div>
                   </div>
-                  <p className="text-xl font-black text-[#78350f]">${Number(product.price || 0).toFixed(2)}</p>
-                </div>
 
-                <div className="mt-3 flex flex-wrap gap-2">
-                  <button
-                    type="button"
-                    onClick={() => beginEdit(product)}
-                    className="rounded-lg border border-[#fbbf24] px-3 py-1 text-xs font-semibold text-[#a16207]"
-                  >
-                    Edit
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => handleDelete(product._id)}
-                    className="rounded-lg border border-[#fda4af] px-3 py-1 text-xs font-semibold text-[#be123c]"
-                  >
-                    Delete
-                  </button>
+                  <div className="flex flex-col items-end gap-2">
+                    <span className="text-xl font-black text-amber-400">${Number(product.price || 0).toFixed(2)}</span>
+                    <div className="flex gap-2">
+                      <button
+                        type="button"
+                        onClick={() => beginEdit(product)}
+                        className="rounded-lg border border-zinc-800 bg-zinc-900 px-3 py-1 text-xs font-bold text-amber-400 hover:bg-zinc-800 transition"
+                      >
+                        Edit
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleDelete(product._id)}
+                        className="rounded-lg border border-rose-500/30 bg-rose-500/10 px-3 py-1 text-xs font-bold text-rose-400 hover:bg-rose-500/20 transition"
+                      >
+                        Delete
+                      </button>
+                    </div>
+                  </div>
                 </div>
               </div>
             ))}
 
             {filteredProducts.length === 0 && (
-              <p className="rounded-xl border border-dashed border-[#fde68a] bg-[#fffbeb] p-4 text-sm text-[#a16207]">
-                No products found.
-              </p>
+              <div className="rounded-2xl border border-dashed border-zinc-800 bg-zinc-950 p-8 text-center text-zinc-500">
+                No dish products match the search query.
+              </div>
             )}
           </div>
         </article>
+
       </section>
     </div>
   );
 }
+

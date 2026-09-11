@@ -97,101 +97,108 @@ export default function Profile() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[radial-gradient(circle_at_top_left,#353d9a_0%,#2b307b_48%,#8453ad_100%)] px-4 py-10 sm:py-16">
-        <div className="mx-auto flex w-full max-w-xl flex-col items-center rounded-3xl bg-[#f7f7fb] p-8 text-center shadow-[0_24px_70px_rgba(19,23,79,0.38)] sm:p-10">
-          <div className="mb-4 rounded-full bg-[#ecefff] px-4 py-1 text-sm font-bold tracking-wide text-[#5057a1]">
-            Profile
-          </div>
+      <div className="min-h-screen bg-zinc-950 flex items-center justify-center px-4 py-16 text-zinc-100">
+        <div className="mx-auto flex flex-col items-center rounded-3xl border border-zinc-800 bg-zinc-900/90 p-8 text-center shadow-2xl">
           <Spinner size="lg" />
-          <p className="mt-4 text-lg font-semibold text-[#2b3278]">
-            Loading your profile...
+          <p className="mt-4 text-sm font-bold text-amber-400">
+            Fetching account profile...
           </p>
         </div>
       </div>
     );
   }
+
   if (error) return <Error message={error.message} />;
 
   return (
-    <div className="min-h-screen bg-[radial-gradient(circle_at_top_left,#353d9a_0%,#2b307b_48%,#8453ad_100%)] px-4 py-10 sm:py-16">
-      <div className="mx-auto w-full max-w-xl rounded-3xl bg-[#f7f7fb] p-6 shadow-[0_24px_70px_rgba(19,23,79,0.38)] sm:p-10">
-        <div className="mb-8 rounded-full bg-[#dbdbe3] p-1.5">
-          <div className="rounded-full bg-[linear-gradient(90deg,#ff6a8d_0%,#ff2f74_100%)] px-4 py-3 text-center text-base font-bold text-white shadow-[0_8px_24px_rgba(255,68,135,0.45)]">
-            Profile Settings
+    <div className="min-h-screen bg-zinc-950 text-zinc-100 font-sans flex items-center justify-center px-4 py-12 selection:bg-amber-500 selection:text-zinc-950">
+      <div className="mx-auto w-full max-w-xl rounded-3xl border border-zinc-800 bg-zinc-900/90 p-6 shadow-2xl backdrop-blur sm:p-10">
+        
+        {/* Profile Card Header */}
+        <div className="mb-8 flex flex-col sm:flex-row items-center gap-4 rounded-2xl border border-zinc-800 bg-zinc-950 p-5">
+          <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-tr from-amber-500 to-amber-600 text-zinc-950 text-2xl font-black shadow-lg shadow-amber-500/20">
+            {initialValues.username ? initialValues.username.charAt(0).toUpperCase() : "U"}
+          </div>
+          <div className="text-center sm:text-left">
+            <h1 className="text-xl font-bold text-white font-serif">{initialValues.username || "Member Profile"}</h1>
+            <p className="text-xs text-zinc-400 mt-0.5">{initialValues.email}</p>
+            <span className="mt-2 inline-block rounded-full bg-amber-500/10 border border-amber-500/30 px-3 py-0.5 text-[10px] font-bold uppercase tracking-widest text-amber-400">
+              {user?.role ? user.role.toUpperCase() : "GUEST MEMBER"}
+            </span>
           </div>
         </div>
 
-        <h1 className="mb-3 text-center text-4xl font-extrabold tracking-wide text-[#171b3d]">
-          My Profile
-        </h1>
-        <p className="mb-8 text-center text-sm text-[#5a5f85] sm:text-base">
-          Update your account details using the same UI style as the auth screens.
+        <h2 className="mb-2 text-2xl font-extrabold text-white font-serif text-center sm:text-left">
+          Account Settings
+        </h2>
+        <p className="mb-6 text-xs text-zinc-400 text-center sm:text-left">
+          Update your public display name or email address associated with your Savoria account.
         </p>
 
         <form onSubmit={handleSubmit} className="space-y-5">
           <Input
-            label="Username"
+            label="Display Username"
             type="text"
             value={usernameValue}
             onChange={handleUsernameChange}
             onBlur={handleUsernameBlur}
             error={usernameHasError && "Invalid username"}
-            className={`w-full rounded-2xl border px-5 py-3 text-base outline-none transition ${
+            className={`w-full rounded-2xl border px-5 py-3 text-sm text-white bg-zinc-950 outline-none transition ${
               usernameHasError
-                ? "border-red-500 bg-red-50"
-                : "border-[#d9def0] bg-[#edf2fc] focus:border-[#6f7eea]"
+                ? "border-rose-500 bg-rose-500/10"
+                : "border-zinc-800 focus:border-amber-500/60"
             }`}
           />
 
           <Input
-            label="Email"
+            label="Email Address"
             type="email"
             value={emailValue}
             onChange={handleEmailChange}
             onBlur={handleEmailBlur}
-            error={emailHasError && "Invalid email"}
-            className={`w-full rounded-2xl border px-5 py-3 text-base outline-none transition ${
+            error={emailHasError && "Invalid email address"}
+            className={`w-full rounded-2xl border px-5 py-3 text-sm text-white bg-zinc-950 outline-none transition ${
               emailHasError
-                ? "border-red-500 bg-red-50"
-                : "border-[#d9def0] bg-[#edf2fc] focus:border-[#6f7eea]"
+                ? "border-rose-500 bg-rose-500/10"
+                : "border-zinc-800 focus:border-amber-500/60"
             }`}
           />
 
-          <div className="grid grid-cols-1 gap-3 pt-1 sm:grid-cols-2">
+          <div className="grid grid-cols-1 gap-3 pt-2 sm:grid-cols-2">
             <Reset
-              title="Reset"
+              title="Discard Changes"
               disabled={!canReset || loading || saving}
               onReset={() => {
                 handleUsernameChange({ target: { value: initialValues.username } });
                 handleEmailChange({ target: { value: initialValues.email } });
               }}
-              className="rounded-2xl border border-[#cfd4ea] px-5 py-3 text-base font-semibold text-[#2a2f68] transition hover:bg-[#ecefff]"
+              className="rounded-2xl border border-zinc-800 bg-zinc-950 px-5 py-3 text-sm font-bold text-zinc-400 transition hover:text-white"
             />
 
             <Submit
-              title="Save Changes"
+              title="Save Profile"
               loading={saving}
               disabled={!canSubmit || loading}
-              loadingLabel="Saving changes..."
-              className="rounded-2xl bg-[linear-gradient(90deg,#3d3fa5_0%,#1d2146_100%)] px-5 py-3 text-base font-semibold text-white shadow-[0_12px_24px_rgba(31,35,82,0.35)] transition hover:brightness-110"
+              loadingLabel="Updating profile..."
+              className="rounded-2xl bg-gradient-to-r from-amber-500 to-amber-600 px-5 py-3 text-sm font-bold text-zinc-950 shadow-xl shadow-amber-500/20 transition hover:brightness-110 active:scale-95 disabled:opacity-40"
             />
           </div>
         </form>
 
-        <section className="mt-8 rounded-2xl border border-[#d9def0] bg-white p-5 shadow-[0_8px_16px_rgba(58,69,131,0.08)]">
-          <h2 className="text-xl font-bold text-[#2c3380]">Security</h2>
-          <p className="mt-2 text-sm text-[#5d6288]">
-            If you think your password is weak or exposed, update it now.
+        <section className="mt-8 rounded-2xl border border-zinc-800 bg-zinc-950 p-5">
+          <h3 className="text-sm font-bold text-white uppercase tracking-wider">Account Security</h3>
+          <p className="mt-1 text-xs text-zinc-400">
+            Keep your account safe by updating your password periodically.
           </p>
 
           <Link
             to="/reset-password"
-            className="mt-4 inline-flex rounded-2xl bg-[linear-gradient(90deg,#3d3fa5_0%,#1d2146_100%)] px-5 py-3 text-sm font-semibold text-white shadow-[0_12px_24px_rgba(31,35,82,0.35)] transition hover:brightness-110"
+            className="mt-4 inline-flex items-center gap-2 rounded-xl bg-zinc-900 border border-zinc-800 px-4 py-2.5 text-xs font-bold text-amber-400 hover:bg-zinc-800 transition"
           >
-            Reset Password
+            Change Password
           </Link>
         </section>
       </div>
     </div>
   );
-}
+}

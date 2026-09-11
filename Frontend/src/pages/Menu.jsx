@@ -60,9 +60,20 @@ export default function MenuPage() {
           return;
         }
 
-        const nextProducts = productsData.result || [];
+        const nextProducts = Array.isArray(productsData?.result)
+          ? productsData.result
+          : Array.isArray(productsData)
+          ? productsData
+          : [];
+
+        const nextCategories = Array.isArray(categoriesData?.result)
+          ? categoriesData.result
+          : Array.isArray(categoriesData)
+          ? categoriesData
+          : [];
+
         setProducts(nextProducts);
-        setCategories(categoriesData.result || []);
+        setCategories(nextCategories);
         setCartItems(syncCartWithInventory(readCart(), nextProducts));
       } catch (err) {
         if (mounted) {
@@ -84,21 +95,30 @@ export default function MenuPage() {
 
   const categoryMap = useMemo(() => {
     const map = new Map();
-    categories.forEach((category) => map.set(category._id, category.name));
+    if (Array.isArray(categories)) {
+      categories.forEach((category) => {
+        if (category && category._id) {
+          map.set(category._id, category.name);
+        }
+      });
+    }
     return map;
   }, [categories]);
 
   const filteredProducts = useMemo(() => {
+    if (!Array.isArray(products)) return [];
     const term = search.trim().toLowerCase();
     const hasCustomMin = customMinPrice !== "" && Number.isFinite(Number(customMinPrice));
     const hasCustomMax = customMaxPrice !== "" && Number.isFinite(Number(customMaxPrice));
 
     return products.filter((product) => {
-      const candidate = `${product.name} ${product.description || ""} ${categoryMap.get(product.category) || ""}`.toLowerCase();
+      if (!product) return false;
+      const categoryName = (product.category && typeof product.category === "object" ? product.category.name : categoryMap.get(product.category)) || "";
+      const candidate = `${product.name || ""} ${product.description || ""} ${categoryName}`.toLowerCase();
       const matchesSearch = !term || candidate.includes(term);
 
-      const productCategoryId = typeof product.category === "object" ? product.category?._id : product.category;
-      const matchesCategory = selectedCategory === "all" || productCategoryId === selectedCategory;
+      const productCategoryId = product.category && typeof product.category === "object" ? product.category._id : product.category;
+      const matchesCategory = selectedCategory === "all" || String(productCategoryId) === String(selectedCategory);
 
       const price = Number(product.price || 0);
       const matchesPresetPrice =
@@ -178,49 +198,57 @@ export default function MenuPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[linear-gradient(180deg,#fff8ef_0%,#fffdf9_45%,#f2fbff_100%)] px-4 py-10 sm:py-16">
+    <div className="min-h-screen bg-zinc-950 text-zinc-100 font-sans px-4 py-10 sm:py-16 selection:bg-amber-500 selection:text-zinc-950">
       <section className="mx-auto max-w-7xl">
-        <div className="mb-8 rounded-3xl border border-[#ffd7b1] bg-white p-6 shadow-[0_18px_46px_rgba(184,86,26,0.18)] sm:p-8">
-          <div className="flex flex-wrap items-center justify-between gap-4">
+        
+        {/* Header & Filter Card */}
+        <div className="mb-10 rounded-3xl border border-zinc-800 bg-zinc-900/90 p-6 shadow-2xl backdrop-blur sm:p-8">
+          <div className="flex flex-wrap items-center justify-between gap-6">
             <div>
-              <p className="mb-2 inline-block rounded-full bg-[#ffe9d2] px-4 py-1 text-xs font-bold uppercase tracking-[0.22em] text-[#a84f17]">
-                Restaurant Menu
-              </p>
-              <h1 className="text-4xl font-black text-[#1f2937] sm:text-5xl">Our Menu</h1>
-              <p className="mt-2 text-sm text-[#5f6b7c] sm:text-base">
-                Explore our daily menu and add your favorites to the live order cart.
+              <div className="inline-flex items-center gap-2 rounded-full border border-amber-500/30 bg-amber-500/10 px-4 py-1 text-xs font-bold uppercase tracking-widest text-amber-400">
+                <span>Gourmet Selections</span>
+              </div>
+              <h1 className="mt-2 text-3xl font-extrabold tracking-tight text-white font-serif sm:text-4xl lg:text-5xl">
+                Explore Our Culinary Menu
+              </h1>
+              <p className="mt-2 text-sm text-zinc-400 max-w-xl">
+                Discover artisan dishes crafted daily. Filter by category or search your favorite ingredients.
               </p>
             </div>
 
             <Link
               to="/orders"
-              className="inline-flex items-center gap-2 rounded-2xl bg-[linear-gradient(90deg,#f97316_0%,#dc2626_100%)] px-5 py-3 text-sm font-semibold text-white shadow-[0_10px_24px_rgba(220,38,38,0.3)] transition hover:brightness-110"
+              className="inline-flex items-center gap-2.5 rounded-2xl bg-gradient-to-r from-amber-500 to-amber-600 px-6 py-3.5 text-sm font-bold text-zinc-950 shadow-lg shadow-amber-500/20 transition hover:brightness-110 active:scale-95"
             >
-              <FiShoppingCart />
-              Cart ({cartTotals.itemsCount})
+              <FiShoppingCart className="text-lg" />
+              <span>Cart Summary ({cartTotals.itemsCount})</span>
+              <span className="ml-1 rounded-lg bg-zinc-950/20 px-2 py-0.5 text-xs text-zinc-950">
+                ${Number(cartTotals?.subtotal || cartTotals?.totalAmount || 0).toFixed(2)}
+              </span>
             </Link>
           </div>
 
-          <div className="mt-6 grid gap-3 lg:grid-cols-[1fr_auto_auto_auto]">
-            <div className="flex items-center gap-3 rounded-2xl border border-[#ffd7b1] bg-[#fff7ef] px-4 py-3">
-              <FiSearch className="text-[#c26724]" />
+          {/* Filter Bar */}
+          <div className="mt-8 grid gap-3 lg:grid-cols-[1fr_auto_auto_auto]">
+            <div className="flex items-center gap-3 rounded-2xl border border-zinc-800 bg-zinc-950 px-4 py-3 text-zinc-300 focus-within:border-amber-500/50 transition">
+              <FiSearch className="text-amber-400 text-lg" />
               <input
                 type="text"
                 value={search}
                 onChange={(event) => setSearch(event.target.value)}
-                placeholder="Search dishes..."
-                className="w-full bg-transparent text-sm text-[#334155] outline-none placeholder:text-[#94a3b8]"
+                placeholder="Search dishes by name or description..."
+                className="w-full bg-transparent text-sm text-white outline-none placeholder:text-zinc-500"
               />
             </div>
 
             <select
               value={selectedCategory}
               onChange={(event) => setSelectedCategory(event.target.value)}
-              className="rounded-2xl border border-[#ffd7b1] bg-white px-4 py-3 text-sm font-medium text-[#7c2d12] outline-none"
+              className="rounded-2xl border border-zinc-800 bg-zinc-950 px-4 py-3 text-sm font-semibold text-zinc-200 outline-none focus:border-amber-500/50 transition"
             >
-              <option value="all">All categories</option>
+              <option value="all" className="bg-zinc-900">All Categories</option>
               {categories.map((category) => (
-                <option key={category._id} value={category._id}>
+                <option key={category._id} value={category._id} className="bg-zinc-900">
                   {category.name}
                 </option>
               ))}
@@ -229,10 +257,10 @@ export default function MenuPage() {
             <select
               value={selectedPriceRange}
               onChange={(event) => setSelectedPriceRange(event.target.value)}
-              className="rounded-2xl border border-[#ffd7b1] bg-white px-4 py-3 text-sm font-medium text-[#7c2d12] outline-none"
+              className="rounded-2xl border border-zinc-800 bg-zinc-950 px-4 py-3 text-sm font-semibold text-zinc-200 outline-none focus:border-amber-500/50 transition"
             >
               {priceRanges.map((range) => (
-                <option key={range.value} value={range.value}>
+                <option key={range.value} value={range.value} className="bg-zinc-900">
                   {range.label}
                 </option>
               ))}
@@ -241,12 +269,13 @@ export default function MenuPage() {
             <button
               type="button"
               onClick={clearFilters}
-              className="rounded-2xl border border-[#ffd7b1] bg-[#fff7ef] px-4 py-3 text-sm font-semibold text-[#9a3412] transition hover:bg-[#ffe9d2]"
+              className="rounded-2xl border border-zinc-800 bg-zinc-950 px-5 py-3 text-sm font-bold text-zinc-400 transition hover:text-white hover:border-zinc-700"
             >
-              Clear Filters
+              Reset Filters
             </button>
           </div>
 
+          {/* Custom Price Range Row */}
           <div className="mt-3 grid gap-3 sm:grid-cols-2">
             <input
               type="number"
@@ -254,8 +283,8 @@ export default function MenuPage() {
               step="0.01"
               value={customMinPrice}
               onChange={(event) => setCustomMinPrice(event.target.value)}
-              placeholder="Custom min price"
-              className="rounded-2xl border border-[#ffd7b1] bg-white px-4 py-3 text-sm font-medium text-[#7c2d12] outline-none"
+              placeholder="Min price ($)"
+              className="rounded-2xl border border-zinc-800 bg-zinc-950 px-4 py-2.5 text-sm font-medium text-white outline-none placeholder:text-zinc-600 focus:border-amber-500/50"
             />
             <input
               type="number"
@@ -263,71 +292,126 @@ export default function MenuPage() {
               step="0.01"
               value={customMaxPrice}
               onChange={(event) => setCustomMaxPrice(event.target.value)}
-              placeholder="Custom max price"
-              className="rounded-2xl border border-[#ffd7b1] bg-white px-4 py-3 text-sm font-medium text-[#7c2d12] outline-none"
+              placeholder="Max price ($)"
+              className="rounded-2xl border border-zinc-800 bg-zinc-950 px-4 py-2.5 text-sm font-medium text-white outline-none placeholder:text-zinc-600 focus:border-amber-500/50"
             />
           </div>
 
-          <div className="mt-4 flex flex-wrap items-center gap-2 text-xs font-semibold uppercase tracking-[0.16em] text-[#a16207]">
-            <FiFilter />
-            <span>Filters applied</span>
-            <span className="rounded-full bg-[#fff7ed] px-3 py-1 text-[#9a3412]">{selectedCategory === "all" ? "All categories" : "Category selected"}</span>
-            <span className="rounded-full bg-[#fff7ed] px-3 py-1 text-[#9a3412]">{priceRanges.find((range) => range.value === selectedPriceRange)?.label}</span>
-            <span className="rounded-full bg-[#fff7ed] px-3 py-1 text-[#9a3412]">Min {customMinPrice === "" ? "Any" : customMinPrice}</span>
-            <span className="rounded-full bg-[#fff7ed] px-3 py-1 text-[#9a3412]">Max {customMaxPrice === "" ? "Any" : customMaxPrice}</span>
+          {/* Applied Filter Pills */}
+          <div className="mt-4 flex flex-wrap items-center gap-2 text-xs font-semibold text-zinc-400">
+            <FiFilter className="text-amber-400" />
+            <span className="uppercase tracking-wider">Active:</span>
+            <span className="rounded-full border border-zinc-800 bg-zinc-950 px-3 py-1 text-amber-400">
+              {selectedCategory === "all" ? "All Categories" : "Category Filtered"}
+            </span>
+            <span className="rounded-full border border-zinc-800 bg-zinc-950 px-3 py-1 text-amber-400">
+              {priceRanges.find((range) => range.value === selectedPriceRange)?.label}
+            </span>
+            {(customMinPrice || customMaxPrice) && (
+              <span className="rounded-full border border-zinc-800 bg-zinc-950 px-3 py-1 text-amber-400">
+                ${customMinPrice || 0} - ${customMaxPrice || "∞"}
+              </span>
+            )}
           </div>
         </div>
 
-        <div className="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-3">
-          {filteredProducts.map((product) => (
-            <article
-              key={product._id}
-              className="group rounded-3xl border border-[#ffe2c7] bg-white p-5 shadow-[0_12px_30px_rgba(201,104,31,0.12)] transition hover:-translate-y-1 hover:shadow-[0_18px_40px_rgba(201,104,31,0.2)]"
-            >
-              <img
-                src={resolveImageUrl(product.image)}
-                alt={product.name}
-                onError={(event) => {
-                  event.currentTarget.src = "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=900&h=600&fit=crop&auto=format";
-                }}
-                className="mb-4 h-48 w-full rounded-2xl object-cover"
-              />
-              <div className="mb-4 flex items-start justify-between gap-3">
-                <h2 className="text-2xl font-extrabold text-[#1f2937]">{product.name}</h2>
-                <span className="rounded-full bg-[#ecfdf5] px-3 py-1 text-xs font-bold text-[#0f766e]">
-                  {product.available ? "Available" : "Sold out"}
-                </span>
-              </div>
+        {/* Product Cards Grid */}
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+          {filteredProducts.map((product) => {
+            const inCartQty = getCartItemQuantity(cartItems, product._id);
+            const stock = Number(product.stock || 0);
+            const isSoldOut = !product.available || stock <= 0;
+            const isMaxInCart = inCartQty >= stock;
 
-              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#9a3412]">{getCategoryName(product)}</p>
-
-              <p className="min-h-12 text-sm text-[#64748b]">{product.description || "Chef special dish"}</p>
-
-              <div className="mt-5 flex items-center justify-between">
-                <p className="text-3xl font-black text-[#c2410c]">${Number(product.price || 0).toFixed(2)}</p>
-                <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[#64748b]">
-                  Stock {product.stock ?? 0}
-                </p>
-              </div>
-
-              <button
-                type="button"
-                onClick={() => handleAdd(product)}
-                disabled={!product.available || Number(product.stock || 0) <= 0 || getCartItemQuantity(cartItems, product._id) >= Number(product.stock || 0)}
-                className="mt-5 w-full rounded-xl bg-[linear-gradient(90deg,#f59e0b_0%,#ea580c_100%)] px-4 py-3 text-sm font-bold text-white transition enabled:hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-50"
+            return (
+              <article
+                key={product._id}
+                className="group flex flex-col justify-between rounded-3xl border border-zinc-800 bg-zinc-900/80 p-5 shadow-xl transition hover:-translate-y-1 hover:border-amber-500/40 hover:shadow-2xl hover:shadow-amber-500/5"
               >
-                {!product.available || Number(product.stock || 0) <= 0
-                  ? "Sold Out"
-                  : getCartItemQuantity(cartItems, product._id) >= Number(product.stock || 0)
-                    ? "Max in Cart"
-                    : "Add To Cart"}
-              </button>
-            </article>
-          ))}
+                <div>
+                  <div className="relative mb-4 h-52 w-full overflow-hidden rounded-2xl bg-zinc-950">
+                    <img
+                      src={resolveImageUrl(product.image)}
+                      alt={product.name}
+                      onError={(event) => {
+                        event.currentTarget.src = "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=900&h=600&fit=crop&auto=format";
+                      }}
+                      className="h-full w-full object-cover transition duration-500 group-hover:scale-105"
+                    />
+                    <div className="absolute top-3 left-3 flex gap-2">
+                      <span
+                        className={`rounded-full px-3 py-1 text-xs font-bold shadow-md ${
+                          isSoldOut
+                            ? "bg-rose-500/90 text-white"
+                            : "bg-emerald-500/90 text-white"
+                        }`}
+                      >
+                        {isSoldOut ? "Sold Out" : "Available"}
+                      </span>
+                    </div>
+                    {inCartQty > 0 && (
+                      <span className="absolute top-3 right-3 flex h-7 min-w-7 items-center justify-center rounded-full bg-amber-500 px-2 text-xs font-black text-zinc-950 shadow-lg">
+                        {inCartQty} in cart
+                      </span>
+                    )}
+                  </div>
+
+                  <div className="mb-2 flex items-center justify-between gap-2">
+                    <span className="text-xs font-bold uppercase tracking-wider text-amber-500">
+                      {getCategoryName(product)}
+                    </span>
+                    <span className="text-xs font-semibold text-zinc-500">
+                      Stock: {stock}
+                    </span>
+                  </div>
+
+                  <h2 className="text-xl font-bold text-white group-hover:text-amber-400 transition mb-2">
+                    {product.name}
+                  </h2>
+
+                  <p className="text-xs text-zinc-400 leading-relaxed min-h-[2.5rem] line-clamp-2">
+                    {product.description || "Freshly prepared gourmet selection made with premium ingredients."}
+                  </p>
+                </div>
+
+                <div className="mt-6 pt-4 border-t border-zinc-800/80 flex items-center justify-between gap-4">
+                  <div>
+                    <span className="text-2xl font-black text-amber-400">
+                      ${Number(product.price || 0).toFixed(2)}
+                    </span>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={() => handleAdd(product)}
+                    disabled={isSoldOut || isMaxInCart}
+                    className="flex items-center gap-2 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 px-4 py-2.5 text-xs font-bold text-zinc-950 transition enabled:hover:brightness-110 active:scale-95 disabled:cursor-not-allowed disabled:opacity-40"
+                  >
+                    <FiShoppingCart className="text-base" />
+                    <span>
+                      {isSoldOut
+                        ? "Sold Out"
+                        : isMaxInCart
+                          ? "Max in Cart"
+                          : "Add to Order"}
+                    </span>
+                  </button>
+                </div>
+              </article>
+            );
+          })}
 
           {filteredProducts.length === 0 && (
-            <div className="col-span-full rounded-2xl border border-dashed border-[#ffcfa2] bg-[#fff7ed] p-8 text-center text-[#9a3412]">
-              No products matched your search.
+            <div className="col-span-full rounded-3xl border border-dashed border-zinc-800 bg-zinc-900/50 p-12 text-center">
+              <p className="text-lg font-bold text-zinc-300">No dishes found</p>
+              <p className="text-xs text-zinc-500 mt-1">Try adjusting your search criteria or resetting filters.</p>
+              <button
+                type="button"
+                onClick={clearFilters}
+                className="mt-4 rounded-xl bg-zinc-800 px-4 py-2 text-xs font-bold text-amber-400 hover:bg-zinc-700"
+              >
+                Clear All Filters
+              </button>
             </div>
           )}
         </div>
@@ -335,3 +419,4 @@ export default function MenuPage() {
     </div>
   );
 }
+

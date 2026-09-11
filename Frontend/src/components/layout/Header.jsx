@@ -1,182 +1,278 @@
-import { useState } from "react";
-import { FiLogOut, FiMenu, FiX } from "react-icons/fi";
-import { Link } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { FiLogOut, FiMenu, FiX, FiShoppingCart, FiUser, FiGrid, FiStar } from "react-icons/fi";
+import { FaUtensils } from "react-icons/fa";
+import { Link, useLocation } from "react-router-dom";
 import { useAuth } from "../../features/auth/hooks/useAuth";
+import { readCart, getCartTotals } from "../../utils/cart";
 
 export default function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [cartCount, setCartCount] = useState(0);
   const { isAuthenticated, isAdmin, isManager, user, logout } = useAuth();
+  const location = useLocation();
 
-  const userName = user?.username || "User";
-  const baseLinkClass = "transition hover:text-[#ffc3d4]";
+  const userName = user?.username || "Guest";
+
+  useEffect(() => {
+    function updateCartCount() {
+      const cart = readCart();
+      const totals = getCartTotals(cart);
+      setCartCount(totals.itemsCount);
+    }
+
+    updateCartCount();
+    window.addEventListener("storage", updateCartCount);
+    const interval = setInterval(updateCartCount, 1000);
+
+    return () => {
+      window.removeEventListener("storage", updateCartCount);
+      clearInterval(interval);
+    };
+  }, []);
 
   function handleLogout() {
     logout();
     setIsMobileMenuOpen(false);
   }
 
+  function isActive(path) {
+    return location.pathname === path;
+  }
+
+  const linkStyle = (path) =>
+    `relative flex items-center gap-1.5 px-3 py-2 text-sm font-semibold transition-all duration-200 rounded-xl ${
+      isActive(path)
+        ? "text-amber-400 bg-amber-500/10 shadow-sm"
+        : "text-zinc-300 hover:text-white hover:bg-white/5"
+    }`;
+
   return (
-    <header className="bg-[linear-gradient(90deg,#2f3792_0%,#1f2350_100%)] text-white shadow-[0_10px_28px_rgba(17,21,58,0.45)]">
+    <header className="sticky top-0 z-50 border-b border-amber-900/30 bg-zinc-950/90 backdrop-blur-md text-white shadow-xl shadow-black/20">
       <nav className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-16">
-          <div className="flex items-center">
-                <Link to="/">
-  <svg viewBox="0 0 680 420" width="110" height="68" xmlns="http://www.w3.org/2000/svg">
-    <polygon points="340,38 435,90 435,194 340,246 245,194 245,90" fill="#ffffff" opacity="0.06"/>
-    <polygon points="340,50 423,98 423,186 340,234 257,186 257,98" fill="none" stroke="#ffffff" strokeWidth="2.5" opacity="0.35"/>
-    <text x="340" y="168" textAnchor="middle" fontFamily="monospace" fontSize="76" fontWeight="700" fill="#ffffff" letterSpacing="-2" opacity="0.95">MF</text>
-    <circle cx="340" cy="206" r="4" fill="#EF9F27"/>
-    <text x="340" y="278" textAnchor="middle" fontFamily="'Segoe UI', sans-serif" fontSize="21" fontWeight="500" fill="#ffffff" letterSpacing="6">MOSTAFA ELFAR</text>
-    <line x1="230" y1="293" x2="450" y2="293" stroke="#EF9F27" strokeWidth="1.5"/>
-    <text x="340" y="318" textAnchor="middle" fontFamily="'Segoe UI', sans-serif" fontSize="12.5" fontWeight="400" fill="#a0a8e8" letterSpacing="3">MERN STACK DEVELOPER</text>
-  </svg>
-</Link>
-          </div>
-          <ul className="hidden md:flex items-center space-x-8 text-sm font-semibold">
+        <div className="flex items-center justify-between h-20">
+          
+          {/* Restaurant Brand Logo */}
+          <Link to="/" className="flex items-center gap-3 group">
+            <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-tr from-amber-600 to-amber-400 text-zinc-950 shadow-lg shadow-amber-500/20 group-hover:scale-105 transition-transform">
+              <FaUtensils className="text-xl" />
+            </div>
+            <div className="flex flex-col">
+              <span className="text-xl font-black tracking-tight text-white font-serif flex items-center gap-1">
+                SAVORIA <span className="text-amber-500 text-xs font-sans tracking-widest font-bold">• KITCHEN</span>
+              </span>
+              <span className="text-[10px] tracking-widest uppercase text-amber-400/80 font-medium">
+                Gourmet Dining & Delivery
+              </span>
+            </div>
+          </Link>
+
+          {/* Desktop Navigation */}
+          <ul className="hidden md:flex items-center gap-1">
             <li>
-              <Link to="/menu" className={baseLinkClass}>Menu</Link>
+              <Link to="/" className={linkStyle("/")}>
+                Home
+              </Link>
+            </li>
+            <li>
+              <Link to="/menu" className={linkStyle("/menu")}>
+                <FaUtensils className="text-amber-400" />
+                Menu
+              </Link>
+            </li>
+            <li>
+              <Link to="/reviews" className={linkStyle("/reviews")}>
+                <FiStar className="text-amber-400" />
+                Reviews
+              </Link>
             </li>
 
             {isAuthenticated && (
               <li>
-                <Link to="/orders" className={baseLinkClass}>Orders</Link>
+                <Link to="/orders" className={linkStyle("/orders")}>
+                  <div className="relative flex items-center gap-1.5">
+                    <FiShoppingCart className="text-amber-400" />
+                    <span>Orders</span>
+                    {cartCount > 0 && (
+                      <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-gradient-to-r from-amber-500 to-orange-600 px-1 text-[11px] font-bold text-white shadow-md">
+                        {cartCount}
+                      </span>
+                    )}
+                  </div>
+                </Link>
               </li>
             )}
-
-            {!isAuthenticated && (
-              <>
-                <li>
-                  <Link to="/login" className={baseLinkClass}>Login</Link>
-                </li>
-                <li>
-                  <Link to="/register" className={baseLinkClass}>Register</Link>
-                </li>
-              </>
-            )}
-
-            {isAuthenticated && (
-              <>
-                <li>
-                  <Link to="/profile" className={baseLinkClass}>Profile</Link>
-                </li>
-                {(isAdmin || isManager) && ( 
-                    <li>
-                      <Link to="/admin/dashboard" className={baseLinkClass}>Admin Hub</Link>
-                    </li>
-                )}
-                <li className="rounded-full bg-[#2a2f68] px-3 py-1 text-xs tracking-wide text-[#d3d8ff]">
-                  {isAdmin ? "ADMIN" : isManager ? "Manager" : "User"}
-                </li>
-                <li className="text-[#f9d4de]">{userName}</li>
-                <li>
-                  <button
-                    type="button"
-                    onClick={handleLogout}
-                    className="inline-flex items-center gap-2 rounded-lg border border-[#7078cb] px-3 py-1.5 text-xs uppercase tracking-wide text-white transition hover:bg-[#2a2f68]"
-                  >
-                    <FiLogOut />
-                    Logout
-                  </button>
-                </li>
-              </>
-            )}
           </ul>
-          <button
-            type="button"
-            className="md:hidden rounded-lg bg-[#2a2f68] p-2 hover:bg-[#1f2350]"
-            aria-label="Open menu"
-            aria-expanded={isMobileMenuOpen}
-            aria-controls="mobile-nav"
-            onClick={() => setIsMobileMenuOpen((prev) => !prev)}
-          >
-            {isMobileMenuOpen ? <FiX className="text-xl" /> : <FiMenu className="text-xl" />}
-          </button>
+
+          {/* User & Auth Buttons */}
+          <div className="hidden md:flex items-center gap-3">
+            {!isAuthenticated ? (
+              <div className="flex items-center gap-2">
+                <Link
+                  to="/login"
+                  className="rounded-xl px-4 py-2 text-sm font-semibold text-zinc-300 hover:text-white transition hover:bg-white/5"
+                >
+                  Sign In
+                </Link>
+                <Link
+                  to="/register"
+                  className="rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 px-5 py-2.5 text-sm font-bold text-zinc-950 shadow-md shadow-amber-500/20 hover:brightness-110 transition active:scale-95"
+                >
+                  Create Account
+                </Link>
+              </div>
+            ) : (
+              <div className="flex items-center gap-3">
+                {(isAdmin || isManager) && (
+                  <Link
+                    to="/admin/dashboard"
+                    className="flex items-center gap-1.5 rounded-xl border border-amber-500/30 bg-amber-500/10 px-3.5 py-2 text-xs font-bold uppercase tracking-wider text-amber-400 hover:bg-amber-500/20 transition"
+                  >
+                    <FiGrid />
+                    Admin Hub
+                  </Link>
+                )}
+
+                <Link
+                  to="/profile"
+                  className="flex items-center gap-2 rounded-xl bg-zinc-900 border border-zinc-800 px-3.5 py-2 hover:border-amber-500/50 transition group"
+                >
+                  <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-amber-500/20 text-amber-400 font-bold text-xs">
+                    <FiUser />
+                  </div>
+                  <div className="flex flex-col text-left">
+                    <span className="text-xs font-bold text-zinc-200 group-hover:text-amber-400 transition">
+                      {userName}
+                    </span>
+                    <span className="text-[10px] uppercase tracking-wider font-semibold text-zinc-500">
+                      {isAdmin ? "Admin" : isManager ? "Manager" : "Customer"}
+                    </span>
+                  </div>
+                </Link>
+
+                <button
+                  type="button"
+                  onClick={handleLogout}
+                  title="Logout"
+                  className="flex h-10 w-10 items-center justify-center rounded-xl border border-zinc-800 bg-zinc-900 text-zinc-400 hover:text-rose-400 hover:border-rose-500/30 hover:bg-rose-500/10 transition"
+                >
+                  <FiLogOut className="text-lg" />
+                </button>
+              </div>
+            )}
+          </div>
+
+          {/* Mobile Menu Button */}
+          <div className="flex items-center gap-2 md:hidden">
+            {isAuthenticated && cartCount > 0 && (
+              <Link
+                to="/orders"
+                className="relative p-2 text-amber-400 bg-amber-500/10 rounded-xl"
+              >
+                <FiShoppingCart className="text-xl" />
+                <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-amber-500 text-[10px] font-bold text-zinc-950">
+                  {cartCount}
+                </span>
+              </Link>
+            )}
+            <button
+              type="button"
+              className="rounded-xl border border-zinc-800 bg-zinc-900 p-2.5 text-zinc-300 hover:text-white"
+              aria-label="Toggle Navigation"
+              onClick={() => setIsMobileMenuOpen((prev) => !prev)}
+            >
+              {isMobileMenuOpen ? <FiX className="text-xl" /> : <FiMenu className="text-xl" />}
+            </button>
+          </div>
         </div>
 
+        {/* Mobile Navigation Drawer */}
         {isMobileMenuOpen && (
-          <ul id="mobile-nav" className="pb-4 md:hidden space-y-2 text-sm font-semibold">
-            <li>
-              <Link
-                to="/menu"
-                className="block rounded-lg bg-[#2a2f68] px-4 py-2 transition hover:bg-[#1f2350]"
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                Menu
-              </Link>
-            </li>
-
-            {!isAuthenticated && (
-              <>
-                <li>
-                  <Link
-                    to="/login"
-                    className="block rounded-lg bg-[#2a2f68] px-4 py-2 transition hover:bg-[#1f2350]"
-                    onClick={() => setIsMobileMenuOpen(false)}
-                  >
-                    Login
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    to="/register"
-                    className="block rounded-lg bg-[#2a2f68] px-4 py-2 transition hover:bg-[#1f2350]"
-                    onClick={() => setIsMobileMenuOpen(false)}
-                  >
-                    Register
-                  </Link>
-                </li>
-              </>
-            )}
+          <div className="md:hidden border-t border-zinc-800/80 py-4 space-y-2 animate-fadeIn">
+            <Link
+              to="/"
+              className={`block rounded-xl px-4 py-2.5 text-sm font-semibold ${
+                isActive("/") ? "bg-amber-500/10 text-amber-400" : "text-zinc-300"
+              }`}
+              onClick={() => setIsMobileMenuOpen(false)}
+            >
+              Home
+            </Link>
+            <Link
+              to="/menu"
+              className={`block rounded-xl px-4 py-2.5 text-sm font-semibold ${
+                isActive("/menu") ? "bg-amber-500/10 text-amber-400" : "text-zinc-300"
+              }`}
+              onClick={() => setIsMobileMenuOpen(false)}
+            >
+              Menu
+            </Link>
+            <Link
+              to="/reviews"
+              className={`block rounded-xl px-4 py-2.5 text-sm font-semibold ${
+                isActive("/reviews") ? "bg-amber-500/10 text-amber-400" : "text-zinc-300"
+              }`}
+              onClick={() => setIsMobileMenuOpen(false)}
+            >
+              Reviews
+            </Link>
 
             {isAuthenticated && (
-              <>
-                <li className="rounded-lg bg-[#2a2f68] px-4 py-2 text-[#f9d4de]">
-                  Signed in as {userName}
-                </li>
-                <li>
-                  <Link
-                    to="/orders"
-                    className="block rounded-lg bg-[#2a2f68] px-4 py-2 transition hover:bg-[#1f2350]"
-                    onClick={() => setIsMobileMenuOpen(false)}
-                  >
-                    Orders
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    to="/profile"
-                    className="block rounded-lg bg-[#2a2f68] px-4 py-2 transition hover:bg-[#1f2350]"
-                    onClick={() => setIsMobileMenuOpen(false)}
-                  >
-                    Profile
-                  </Link>
-                </li>
-                <li>
-                </li>
-
-                {(isAdmin || isManager) && (
-                    <li>
-                      <Link
-                        to="/admin/dashboard"
-                        className="block rounded-lg bg-[#2a2f68] px-4 py-2 transition hover:bg-[#1f2350]"
-                        onClick={() => setIsMobileMenuOpen(false)}
-                      >
-                        Admin Hub
-                      </Link>
-                    </li>
-                )}
-                <li>
-                  <button
-                    type="button"
-                    className="block w-full rounded-lg bg-[#2a2f68] px-4 py-2 text-left transition hover:bg-[#1f2350]"
-                    onClick={handleLogout}
-                  >
-                    Logout
-                  </button>
-                </li>
-              </>
+              <Link
+                to="/orders"
+                className={`block rounded-xl px-4 py-2.5 text-sm font-semibold ${
+                  isActive("/orders") ? "bg-amber-500/10 text-amber-400" : "text-zinc-300"
+                }`}
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                My Orders & Cart ({cartCount})
+              </Link>
             )}
-          </ul>
+
+            {!isAuthenticated ? (
+              <div className="pt-2 space-y-2 border-t border-zinc-800">
+                <Link
+                  to="/login"
+                  className="block w-full text-center rounded-xl bg-zinc-900 border border-zinc-800 px-4 py-2.5 text-sm font-semibold text-zinc-200"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  Sign In
+                </Link>
+                <Link
+                  to="/register"
+                  className="block w-full text-center rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 px-4 py-2.5 text-sm font-bold text-zinc-950"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  Create Account
+                </Link>
+              </div>
+            ) : (
+              <div className="pt-2 space-y-2 border-t border-zinc-800">
+                <Link
+                  to="/profile"
+                  className="block rounded-xl px-4 py-2.5 text-sm font-semibold text-zinc-300"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  Profile ({userName})
+                </Link>
+                {(isAdmin || isManager) && (
+                  <Link
+                    to="/admin/dashboard"
+                    className="block rounded-xl bg-amber-500/10 px-4 py-2.5 text-sm font-bold text-amber-400"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                  >
+                    Admin Hub
+                  </Link>
+                )}
+                <button
+                  type="button"
+                  onClick={handleLogout}
+                  className="block w-full text-left rounded-xl px-4 py-2.5 text-sm font-semibold text-rose-400 hover:bg-rose-500/10"
+                >
+                  Sign Out
+                </button>
+              </div>
+            )}
+          </div>
         )}
       </nav>
     </header>

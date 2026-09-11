@@ -30,13 +30,14 @@ export default function OrdersPage() {
 
     try {
       setLoading(true);
-      const params = { page, limit: 1, order: "desc" };
+      const params = { page, limit: 6, order: "desc" };
       if (status !== "all") {
         params.status = status;
       }
 
       const data = await getOrders(params);
       const ownOrders = (data.result || []).filter((order) => {
+        if (isAdmin) return true;
         const orderUserId = order?.user && typeof order.user === "object" ? order.user?._id : order?.user;
         return !user?._id || String(orderUserId) === String(user._id);
       });
@@ -101,13 +102,13 @@ export default function OrdersPage() {
   function getStatusStyles(status) {
     switch (status) {
       case "processing":
-        return "border-[#fde68a] bg-[#fffbeb] text-[#b45309]";
+        return "border-amber-500/40 bg-amber-500/10 text-amber-400";
       case "delivered":
-        return "border-[#bbf7d0] bg-[#f0fdf4] text-[#15803d]";
+        return "border-emerald-500/40 bg-emerald-500/10 text-emerald-400";
       case "cancelled":
-        return "border-[#fecaca] bg-[#fff1f2] text-[#be123c]";
+        return "border-rose-500/40 bg-rose-500/10 text-rose-400";
       default:
-        return "border-[#bfdbfe] bg-[#eff6ff] text-[#1d4ed8]";
+        return "border-sky-500/40 bg-sky-500/10 text-sky-400";
     }
   }
 
@@ -134,15 +135,15 @@ export default function OrdersPage() {
       return (
         <div
           key={`${order._id}-${index}`}
-          className="flex items-center justify-between gap-3 rounded-2xl border border-white/70 bg-white/80 px-4 py-3"
+          className="flex items-center justify-between gap-3 rounded-2xl border border-zinc-800 bg-zinc-950 px-4 py-3"
         >
           <div>
-            <p className="font-semibold text-[#111827]">{productName}</p>
-            <p className="text-xs text-[#6b7280]">
+            <p className="font-bold text-white text-sm">{productName}</p>
+            <p className="text-xs text-zinc-400">
               Qty {item.quantity} · ${unitPrice.toFixed(2)} each
             </p>
           </div>
-          <p className="text-sm font-bold text-[#111827]">${(unitPrice * item.quantity).toFixed(2)}</p>
+          <p className="text-sm font-black text-amber-400">${(unitPrice * item.quantity).toFixed(2)}</p>
         </div>
       );
     });
@@ -173,7 +174,7 @@ export default function OrdersPage() {
 
       clearCart();
       setCart([]);
-      toast?.success("Order placed successfully");
+      toast?.success("Order placed successfully! 🍽️");
       await loadOrders(currentPage, statusFilter);
     } catch (err) {
       setError(err);
@@ -186,7 +187,7 @@ export default function OrdersPage() {
   async function handleOrderUpdate(orderId, status) {
     try {
       setSubmitting(true);
-      await updateOrder(orderId, isAdmin ? { status } : {});
+      await updateOrder(orderId, { status });
       toast?.success(isAdmin ? "Order status updated" : "Order cancelled");
       await loadOrders(currentPage, statusFilter);
     } catch (err) {
@@ -198,157 +199,170 @@ export default function OrdersPage() {
 
   if (!isAuthenticated) {
     return (
-      <div className="mx-auto mt-16 max-w-3xl rounded-3xl border border-[#fecaca] bg-[#fff7f7] p-8 text-center shadow-[0_18px_40px_rgba(127,29,29,0.08)]">
-        <h1 className="text-3xl font-black text-[#7f1d1d]">Login Required</h1>
-        <p className="mt-3 text-[#b91c1c]">Sign in to place and manage your orders.</p>
-        <Link
-          to="/login"
-          className="mt-6 inline-block rounded-xl bg-[#dc2626] px-5 py-3 font-semibold text-white transition hover:brightness-110"
-        >
-          Go To Login
-        </Link>
+      <div className="min-h-screen bg-zinc-950 flex items-center justify-center px-4 py-16 text-zinc-100">
+        <div className="mx-auto max-w-md w-full rounded-3xl border border-zinc-800 bg-zinc-900/90 p-8 text-center shadow-2xl">
+          <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-amber-500/10 text-amber-400 text-2xl font-bold mb-4">
+            🔒
+          </div>
+          <h1 className="text-2xl font-bold text-white font-serif">Sign In Required</h1>
+          <p className="mt-2 text-xs text-zinc-400 leading-relaxed">
+            Please log in to your Savoria account to manage your live cart and view previous order history.
+          </p>
+          <Link
+            to="/login"
+            className="mt-6 inline-block w-full rounded-2xl bg-gradient-to-r from-amber-500 to-amber-600 py-3 text-sm font-bold text-zinc-950 hover:brightness-110 transition shadow-lg shadow-amber-500/20"
+          >
+            Go To Sign In Page
+          </Link>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-[radial-gradient(circle_at_top_left,#fff1f2_0%,#f8fafc_38%,#ecfeff_100%)] px-4 py-10 sm:px-6 sm:py-16">
-      <section className="mx-auto max-w-7xl rounded-4xl border border-white/70 bg-white/90 p-5 shadow-[0_24px_80px_rgba(15,23,42,0.10)] backdrop-blur sm:p-8">
-        <div className="flex flex-col gap-4 border-b border-slate-100 pb-6 lg:flex-row lg:items-end lg:justify-between">
-          <div className="max-w-2xl">
-            <span className="inline-flex rounded-full border border-rose-100 bg-rose-50 px-3 py-1 text-[11px] font-bold uppercase tracking-[0.22em] text-rose-700">
-              Order Center
-            </span>
-            <h1 className="mt-3 text-4xl font-black tracking-tight text-slate-950 sm:text-5xl">
-              Build orders in checkout, then review them in history.
-            </h1>
-            <p className="mt-3 text-sm leading-6 text-slate-600 sm:text-base">
-              The checkout panel stays focused on placing a new order while the history panel keeps previous orders,
-              users, and products easy to inspect.
-            </p>
-          </div>
+    <div className="min-h-screen bg-zinc-950 text-zinc-100 font-sans px-4 py-10 sm:px-6 sm:py-16 selection:bg-amber-500 selection:text-zinc-950">
+      <section className="mx-auto max-w-7xl">
+        
+        {/* Header Stats */}
+        <div className="rounded-3xl border border-zinc-800 bg-zinc-900/90 p-6 shadow-2xl backdrop-blur sm:p-8">
+          <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
+            <div>
+              <span className="inline-flex items-center gap-2 rounded-full border border-amber-500/30 bg-amber-500/10 px-4 py-1 text-xs font-bold uppercase tracking-widest text-amber-400">
+                Live Order Desk
+              </span>
+              <h1 className="mt-2 text-3xl font-extrabold tracking-tight text-white font-serif sm:text-4xl">
+                Cart & Order Management
+              </h1>
+              <p className="mt-2 text-sm text-zinc-400 max-w-xl">
+                Review your current order cart on the left, and track previous active orders on the right.
+              </p>
+            </div>
 
-          <div className="grid grid-cols-2 gap-3 sm:min-w-105">
-            <div className="rounded-2xl border border-rose-100 bg-rose-50 px-4 py-4">
-              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-rose-600">Cart items</p>
-              <p className="mt-2 text-3xl font-black text-rose-950">{totals.itemsCount}</p>
-            </div>
-            <div className="rounded-2xl border border-sky-100 bg-sky-50 px-4 py-4">
-              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-sky-600">Orders tracked</p>
-              <p className="mt-2 text-3xl font-black text-sky-950">{orders.length}</p>
-            </div>
-            <div className="rounded-2xl border border-emerald-100 bg-emerald-50 px-4 py-4">
-              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-emerald-600">Lines reviewed</p>
-              <p className="mt-2 text-3xl font-black text-emerald-950">{orderItemCount}</p>
-            </div>
-            <div className="rounded-2xl border border-violet-100 bg-violet-50 px-4 py-4">
-              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-violet-600">Cart total</p>
-              <p className="mt-2 text-3xl font-black text-violet-950">${totals.totalAmount.toFixed(2)}</p>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+              <div className="rounded-2xl border border-zinc-800 bg-zinc-950 p-4">
+                <p className="text-[10px] font-bold uppercase tracking-widest text-amber-500">Cart Items</p>
+                <p className="mt-1 text-2xl font-black text-white">{totals.itemsCount}</p>
+              </div>
+              <div className="rounded-2xl border border-zinc-800 bg-zinc-950 p-4">
+                <p className="text-[10px] font-bold uppercase tracking-widest text-sky-400">Orders Tracked</p>
+                <p className="mt-1 text-2xl font-black text-white">{orders.length}</p>
+              </div>
+              <div className="rounded-2xl border border-zinc-800 bg-zinc-950 p-4">
+                <p className="text-[10px] font-bold uppercase tracking-widest text-emerald-400">Total Items</p>
+                <p className="mt-1 text-2xl font-black text-white">{orderItemCount}</p>
+              </div>
+              <div className="rounded-2xl border border-zinc-800 bg-zinc-950 p-4">
+                <p className="text-[10px] font-bold uppercase tracking-widest text-amber-400">Cart Subtotal</p>
+                <p className="mt-1 text-2xl font-black text-amber-400">${totals.totalAmount.toFixed(2)}</p>
+              </div>
             </div>
           </div>
         </div>
 
-        <div className="mt-8 grid gap-6 lg:grid-cols-[0.96fr_1.04fr]">
-          <article id="checkout" className="rounded-3xl border border-rose-100 bg-linear-to-br from-rose-50 via-white to-white p-5 shadow-[0_16px_40px_rgba(190,24,93,0.10)] sm:p-6">
-            <div className="flex flex-wrap items-center justify-between gap-3">
-              <div>
-                <p className="text-xs font-bold uppercase tracking-[0.22em] text-rose-600">Checkout</p>
-                <h2 className="mt-2 text-2xl font-black text-slate-950">Create order</h2>
+        {/* Main Grid: Checkout & Order History */}
+        <div className="mt-8 grid gap-8 lg:grid-cols-12">
+          
+          {/* Checkout Column */}
+          <article id="checkout" className="lg:col-span-5 rounded-3xl border border-zinc-800 bg-zinc-900/90 p-6 shadow-xl flex flex-col justify-between">
+            <div>
+              <div className="flex items-center justify-between pb-4 border-b border-zinc-800">
+                <div>
+                  <span className="text-[10px] font-bold uppercase tracking-widest text-amber-500">Step 1</span>
+                  <h2 className="text-2xl font-bold text-white font-serif">Checkout Cart</h2>
+                </div>
+                <span className="rounded-full border border-amber-500/30 bg-amber-500/10 px-3 py-1 text-xs font-bold text-amber-400">
+                  ${totals.totalAmount.toFixed(2)}
+                </span>
               </div>
-              <div className="rounded-full border border-rose-200 bg-white px-3 py-1 text-xs font-semibold text-rose-700">
-                Total ${totals.totalAmount.toFixed(2)}
-              </div>
-            </div>
 
-            <div className="mt-5 space-y-3">
-              {cart.map((item) => (
-                <div key={item.productId} className="rounded-2xl border border-rose-100 bg-white p-4">
-                  <div className="flex items-start justify-between gap-3">
-                    <div>
-                      <p className="font-bold text-slate-950">{item.name}</p>
-                      <p className="mt-1 text-sm text-slate-500">${Number(item.price).toFixed(2)} each</p>
+              <div className="mt-6 space-y-3">
+                {cart.map((item) => (
+                  <div key={item.productId} className="rounded-2xl border border-zinc-800 bg-zinc-950 p-4">
+                    <div className="flex items-start justify-between gap-3">
+                      <div>
+                        <p className="font-bold text-white text-sm">{item.name}</p>
+                        <p className="text-xs text-zinc-400 mt-0.5">${Number(item.price).toFixed(2)} each</p>
+                      </div>
+
+                      <button
+                        type="button"
+                        onClick={() => setCart(removeCartItem(item.productId))}
+                        className="rounded-xl border border-rose-500/30 bg-rose-500/10 px-2.5 py-1 text-xs font-bold text-rose-400 hover:bg-rose-500/20 transition"
+                      >
+                        Remove
+                      </button>
                     </div>
 
-                    <button
-                      type="button"
-                      onClick={() => setCart(removeCartItem(item.productId))}
-                      className="rounded-full border border-rose-200 px-3 py-1 text-xs font-semibold text-rose-700 transition hover:bg-rose-50"
-                    >
-                      Remove
-                    </button>
+                    <div className="mt-3 pt-3 border-t border-zinc-900 flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <label className="text-[11px] font-bold uppercase text-zinc-500">Qty:</label>
+                        <input
+                          type="number"
+                          min={1}
+                          value={item.quantity}
+                          onChange={(event) =>
+                            setCart(updateCartItem(item.productId, Number(event.target.value || 1)))
+                          }
+                          className="w-20 rounded-xl border border-zinc-800 bg-zinc-900 px-3 py-1 text-sm text-white outline-none focus:border-amber-500/50"
+                        />
+                      </div>
+                      <span className="text-sm font-bold text-amber-400">
+                        ${(Number(item.price) * item.quantity).toFixed(2)}
+                      </span>
+                    </div>
                   </div>
+                ))}
 
-                  <div className="mt-4 flex items-center gap-3">
-                    <label className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">Qty</label>
-                    <input
-                      type="number"
-                      min={1}
-                      value={item.quantity}
-                      onChange={(event) =>
-                        setCart(updateCartItem(item.productId, Number(event.target.value || 1)))
-                      }
-                      className="w-24 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-900 outline-none transition focus:border-rose-300 focus:bg-white"
-                    />
-                    <span className="text-sm font-medium text-slate-500">
-                      Line total ${(Number(item.price) * item.quantity).toFixed(2)}
-                    </span>
+                {cart.length === 0 && (
+                  <div className="rounded-2xl border border-dashed border-zinc-800 bg-zinc-950 p-8 text-center text-zinc-500">
+                    <p className="text-sm font-medium">Your cart is currently empty</p>
+                    <Link to="/menu" className="mt-3 inline-block rounded-xl bg-amber-500/10 px-4 py-2 text-xs font-bold text-amber-400 hover:bg-amber-500/20 transition">
+                      Browse Menu Dishes
+                    </Link>
                   </div>
-                </div>
-              ))}
-
-              {cart.length === 0 && (
-                <p className="rounded-2xl border border-dashed border-rose-200 bg-white p-5 text-sm text-slate-500">
-                  Cart is empty. Add products from the menu to start a new order.
-                </p>
-              )}
+                )}
+              </div>
             </div>
 
-            <div className="mt-6 rounded-3xl border border-rose-100 bg-white p-5">
-              <div className="flex items-center justify-between gap-3">
-                <div>
-                  <p className="text-xs font-bold uppercase tracking-[0.2em] text-rose-600">Summary</p>
-                  <p className="mt-1 text-sm text-slate-500">Review before you submit the order.</p>
-                </div>
-                <p className="text-3xl font-black text-slate-950">${totals.totalAmount.toFixed(2)}</p>
+            <div className="mt-8 pt-6 border-t border-zinc-800">
+              <div className="flex items-center justify-between mb-4">
+                <span className="text-sm font-bold text-zinc-400 uppercase tracking-wider">Grand Total</span>
+                <span className="text-3xl font-black text-amber-400">${totals.totalAmount.toFixed(2)}</span>
               </div>
               <button
                 type="button"
                 onClick={handlePlaceOrder}
                 disabled={submitting || cart.length === 0}
-                className="mt-5 w-full rounded-2xl bg-[linear-gradient(90deg,#e11d48_0%,#fb7185_100%)] px-4 py-3 text-sm font-bold text-white shadow-[0_14px_30px_rgba(225,29,72,0.25)] transition enabled:hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-50"
+                className="w-full rounded-2xl bg-gradient-to-r from-amber-500 to-amber-600 py-3.5 text-sm font-bold text-zinc-950 shadow-xl shadow-amber-500/20 transition enabled:hover:brightness-110 active:scale-95 disabled:cursor-not-allowed disabled:opacity-40"
               >
-                {submitting ? "Submitting..." : "Place Order"}
+                {submitting ? "Processing Order..." : "Confirm & Place Order"}
               </button>
             </div>
           </article>
 
-          <article id="history" className="rounded-3xl border border-sky-100 bg-linear-to-br from-sky-50 via-white to-white p-5 shadow-[0_16px_40px_rgba(37,99,235,0.10)] sm:p-6">
-            <div className="flex flex-wrap items-center justify-between gap-3">
+          {/* History Column */}
+          <article id="history" className="lg:col-span-7 rounded-3xl border border-zinc-800 bg-zinc-900/90 p-6 shadow-xl">
+            <div className="flex flex-wrap items-center justify-between gap-4 pb-4 border-b border-zinc-800">
               <div>
-                <p className="text-xs font-bold uppercase tracking-[0.22em] text-sky-600">History</p>
-                <h2 className="mt-2 text-2xl font-black text-slate-950">Your orders</h2>
+                <span className="text-[10px] font-bold uppercase tracking-widest text-sky-400">Track Record</span>
+                <h2 className="text-2xl font-bold text-white font-serif">Order History</h2>
               </div>
               <select
                 value={statusFilter}
                 onChange={(event) => setStatusFilter(event.target.value)}
-                className="rounded-2xl border border-sky-200 bg-white px-3 py-2 text-sm font-medium text-sky-900 outline-none"
+                className="rounded-2xl border border-zinc-800 bg-zinc-950 px-4 py-2 text-xs font-bold text-zinc-200 outline-none focus:border-amber-500/50"
               >
-                <option value="all">All statuses</option>
+                <option value="all" className="bg-zinc-900">All Statuses</option>
                 {statusList.map((status) => (
-                  <option key={status} value={status}>
-                    {status}
+                  <option key={status} value={status} className="bg-zinc-900">
+                    {status.toUpperCase()}
                   </option>
                 ))}
               </select>
             </div>
 
-            <p className="mt-3 text-sm text-slate-600">
-              This area is intentionally separate from checkout so order review stays focused, readable, and easy to
-              scan.
-            </p>
-
             {loading ? (
-              <div className="mt-8 flex items-center justify-center py-10">
+              <div className="flex items-center justify-center py-16">
                 <Spinner />
               </div>
             ) : error ? (
@@ -358,39 +372,31 @@ export default function OrdersPage() {
             ) : (
               <div className="mt-6 space-y-4">
                 {orders.map((order) => (
-                  <article key={order._id} className="rounded-3xl border border-sky-100 bg-white p-4 shadow-[0_12px_26px_rgba(15,23,42,0.06)]">
-                    <div className="flex flex-wrap items-start justify-between gap-3">
+                  <article key={order._id} className="rounded-2xl border border-zinc-800 bg-zinc-950 p-5">
+                    <div className="flex flex-wrap items-start justify-between gap-3 pb-4 border-b border-zinc-900">
                       <div>
-                        <p className="text-xs font-bold uppercase tracking-[0.18em] text-sky-600">
-                          Order #{order._id?.slice(-6)}
+                        <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-500">
+                          Order #{order._id?.slice(-8)}
+                        </span>
+                        <h3 className="text-lg font-bold text-white mt-0.5">{renderOrderUser(order)}</h3>
+                        <p className="text-xs text-zinc-500 mt-1">
+                          {order.createdAt ? new Date(order.createdAt).toLocaleString() : "Recent Order"}
                         </p>
-                        <h3 className="mt-1 text-lg font-black text-slate-950">{renderOrderUser(order)}</h3>
-                        <div className="mt-2 flex flex-wrap gap-2 text-xs font-semibold text-slate-500">
-                          <span className="rounded-full bg-slate-50 px-3 py-1">
-                            {order.user && typeof order.user === "object" ? order.user.email : "Customer details loaded"}
-                          </span>
-                          <span className="rounded-full bg-slate-50 px-3 py-1">
-                            {(order.items || []).length} products
-                          </span>
-                        </div>
                       </div>
 
-                      <div className="text-right">
-                        <span className={`inline-flex rounded-full border px-3 py-1 text-xs font-bold uppercase tracking-[0.18em] ${getStatusStyles(order.status)}`}>
+                      <div className="flex items-center gap-3">
+                        <span className={`inline-flex rounded-full border px-3 py-1 text-xs font-bold uppercase tracking-wider ${getStatusStyles(order.status)}`}>
                           {order.status}
                         </span>
-                        <p className="mt-2 text-sm font-semibold text-slate-500">
-                          {order.createdAt ? new Date(order.createdAt).toLocaleString() : "Recent order"}
-                        </p>
                       </div>
                     </div>
 
                     <div className="mt-4 space-y-2">{renderOrderItems(order)}</div>
 
-                    <div className="mt-4 flex flex-wrap items-center justify-between gap-3 border-t border-slate-100 pt-4">
+                    <div className="mt-4 pt-4 border-t border-zinc-900 flex items-center justify-between">
                       <div>
-                        <p className="text-xs font-bold uppercase tracking-[0.18em] text-slate-500">Total</p>
-                        <p className="text-2xl font-black text-slate-950">${Number(order.totalAmount || 0).toFixed(2)}</p>
+                        <span className="text-[10px] uppercase tracking-widest text-zinc-500 font-bold">Total Amount</span>
+                        <p className="text-2xl font-black text-amber-400">${Number(order.totalAmount || 0).toFixed(2)}</p>
                       </div>
 
                       <div className="flex items-center gap-2">
@@ -398,11 +404,11 @@ export default function OrdersPage() {
                           <select
                             value={order.status}
                             onChange={(event) => handleOrderUpdate(order._id, event.target.value)}
-                            className="rounded-xl border border-sky-200 bg-sky-50 px-3 py-2 text-sm font-semibold text-sky-900 outline-none"
+                            className="rounded-xl border border-zinc-800 bg-zinc-900 px-3 py-1.5 text-xs font-bold text-amber-400 outline-none"
                           >
                             {statusList.map((status) => (
-                              <option key={status} value={status}>
-                                {status}
+                              <option key={status} value={status} className="bg-zinc-900">
+                                {status.toUpperCase()}
                               </option>
                             ))}
                           </select>
@@ -411,9 +417,9 @@ export default function OrdersPage() {
                             <button
                               type="button"
                               onClick={() => handleOrderUpdate(order._id, "cancelled")}
-                              className="rounded-xl border border-rose-200 px-4 py-2 text-xs font-bold uppercase tracking-[0.18em] text-rose-700 transition hover:bg-rose-50"
+                              className="rounded-xl border border-rose-500/30 bg-rose-500/10 px-4 py-2 text-xs font-bold text-rose-400 hover:bg-rose-500/20 transition"
                             >
-                              Cancel order
+                              Cancel Order
                             </button>
                           )
                         )}
@@ -423,28 +429,29 @@ export default function OrdersPage() {
                 ))}
 
                 {orders.length === 0 && (
-                  <p className="rounded-2xl border border-dashed border-sky-200 bg-white p-5 text-sm text-slate-500">
-                    No orders yet. Place the first one from the checkout panel.
-                  </p>
+                  <div className="rounded-2xl border border-dashed border-zinc-800 bg-zinc-950 p-8 text-center text-zinc-500">
+                    No orders matching status criteria.
+                  </div>
                 )}
 
-                <div className="flex items-center justify-between gap-3 rounded-2xl border border-sky-100 bg-white px-4 py-3">
+                {/* Pagination */}
+                <div className="flex items-center justify-between rounded-2xl border border-zinc-800 bg-zinc-950 px-4 py-3">
                   <button
                     type="button"
                     disabled={currentPage <= 1 || loading}
                     onClick={() => loadOrders(currentPage - 1, statusFilter)}
-                    className="rounded-xl border border-sky-200 px-3 py-2 text-xs font-semibold text-sky-900 disabled:cursor-not-allowed disabled:opacity-50"
+                    className="rounded-xl border border-zinc-800 bg-zinc-900 px-4 py-2 text-xs font-bold text-zinc-300 disabled:opacity-40 hover:bg-zinc-800"
                   >
                     Previous
                   </button>
-                  <p className="text-xs font-semibold uppercase tracking-[0.16em] text-sky-700">
-                    Page {currentPage} / {totalPages}
-                  </p>
+                  <span className="text-xs font-bold text-amber-400">
+                    Page {currentPage} of {totalPages}
+                  </span>
                   <button
                     type="button"
                     disabled={currentPage >= totalPages || loading}
                     onClick={() => loadOrders(currentPage + 1, statusFilter)}
-                    className="rounded-xl border border-sky-200 px-3 py-2 text-xs font-semibold text-sky-900 disabled:cursor-not-allowed disabled:opacity-50"
+                    className="rounded-xl border border-zinc-800 bg-zinc-900 px-4 py-2 text-xs font-bold text-zinc-300 disabled:opacity-40 hover:bg-zinc-800"
                   >
                     Next
                   </button>
@@ -452,8 +459,10 @@ export default function OrdersPage() {
               </div>
             )}
           </article>
+
         </div>
       </section>
     </div>
   );
 }
+

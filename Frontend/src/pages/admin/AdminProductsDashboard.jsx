@@ -67,7 +67,7 @@ export default function AdminProductsDashboardPage() {
 
   if (loading) {
     return (
-      <div className="flex min-h-[55vh] items-center justify-center">
+      <div className="flex min-h-[60vh] items-center justify-center bg-zinc-950">
         <Spinner size="lg" />
       </div>
     );
@@ -75,157 +75,160 @@ export default function AdminProductsDashboardPage() {
 
   if (error) {
     return (
-      <div className="mx-auto mt-8 max-w-6xl px-4">
+      <div className="mx-auto mt-8 max-w-5xl px-4 bg-zinc-950">
         <Error message={error.message} />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-[radial-gradient(circle_at_top_left,#ffedd5_0%,#fff7ed_44%,#f8fafc_100%)] px-4 py-10 sm:py-16">
-      <section className="mx-auto max-w-7xl rounded-4xl border border-orange-100 bg-white/90 p-6 shadow-[0_24px_70px_rgba(194,65,12,0.12)] backdrop-blur sm:p-10">
-        <div className="flex flex-col gap-6 border-b border-orange-100 pb-6 lg:flex-row lg:items-end lg:justify-between">
-          <div>
-            <span className="inline-flex rounded-full border border-orange-100 bg-orange-50 px-3 py-1 text-[11px] font-bold uppercase tracking-[0.22em] text-orange-700">
-              Commerce Dashboard
-            </span>
-            <h1 className="mt-3 text-4xl font-black tracking-tight text-slate-950 sm:text-5xl">
-              Products and orders live together.
-            </h1>
-            <p className="mt-3 max-w-2xl text-sm leading-6 text-slate-600 sm:text-base">
-              This dashboard is for catalog operations, category health, and order visibility without mixing in user
-              management or activity logs.
-            </p>
-          </div>
+    <div className="min-h-screen bg-zinc-950 text-zinc-100 font-sans px-4 py-10 selection:bg-amber-500 selection:text-zinc-950">
+      <section className="mx-auto max-w-7xl">
+        
+        {/* Header */}
+        <div className="rounded-3xl border border-zinc-800 bg-zinc-900/90 p-6 shadow-2xl backdrop-blur sm:p-8">
+          <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
+            <div>
+              <span className="inline-flex items-center gap-2 rounded-full border border-amber-500/30 bg-amber-500/10 px-4 py-1 text-xs font-bold uppercase tracking-widest text-amber-400">
+                Commerce Dashboard
+              </span>
+              <h1 className="mt-2 text-3xl font-extrabold tracking-tight text-white font-serif sm:text-4xl">
+                Products & Revenue Analytics
+              </h1>
+              <p className="mt-2 text-sm text-zinc-400 max-w-xl">
+                Monitor live food catalog metrics, category health, revenue breakdowns, and order volume.
+              </p>
+            </div>
 
-          <div className="flex flex-wrap gap-3">
-            <Link
-              to="/admin/products"
-              className="rounded-2xl bg-[linear-gradient(90deg,#c2410c_0%,#ea580c_100%)] px-4 py-3 text-sm font-semibold text-white shadow-[0_10px_24px_rgba(194,65,12,0.20)] transition hover:brightness-110"
-            >
-              Manage Products
-            </Link>
-            <Link
-              to="/admin/orders"
-              className="rounded-2xl bg-[linear-gradient(90deg,#0f172a_0%,#1e293b_100%)] px-4 py-3 text-sm font-semibold text-white shadow-[0_10px_24px_rgba(15,23,42,0.18)] transition hover:brightness-110"
-            >
-              Manage Orders
-            </Link>
-            <Link
-              to="/admin/categories"
-              className="rounded-2xl border border-orange-200 bg-orange-50 px-4 py-3 text-sm font-semibold text-orange-800 transition hover:bg-orange-100"
-            >
-              Manage Categories
-            </Link>
-             
-          
-            
+            <div className="flex flex-wrap gap-2.5">
+              <Link
+                to="/admin/products"
+                className="rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 px-4 py-2.5 text-xs font-bold text-zinc-950 shadow-md shadow-amber-500/20 hover:brightness-110 transition"
+              >
+                Manage Products
+              </Link>
+              <Link
+                to="/admin/orders"
+                className="rounded-xl border border-zinc-800 bg-zinc-950 px-4 py-2.5 text-xs font-bold text-white hover:bg-zinc-800 transition"
+              >
+                Manage Orders
+              </Link>
+              <Link
+                to="/admin/categories"
+                className="rounded-xl border border-zinc-800 bg-zinc-950 px-4 py-2.5 text-xs font-bold text-amber-400 hover:bg-zinc-800 transition"
+              >
+                Categories
+              </Link>
+            </div>
           </div>
         </div>
 
-        <div className="mt-8 grid gap-4 md:grid-cols-4">
-          <article className="rounded-3xl border border-orange-100 bg-orange-50 p-5">
-            <div className="mb-2 inline-flex rounded-2xl bg-orange-100 p-2 text-orange-700">
+        {/* Metrics Grid */}
+        <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <article className="rounded-3xl border border-zinc-800 bg-zinc-900/90 p-5 shadow-xl">
+            <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-xl bg-amber-500/10 text-amber-400 font-bold">
               <FiBox className="text-xl" />
             </div>
-            <p className="text-sm font-semibold text-orange-700">Total Products</p>
-            <p className="mt-2 text-3xl font-black text-slate-950">{productsData?.totalResults || 0}</p>
+            <p className="text-xs font-bold uppercase tracking-wider text-zinc-400">Total Products</p>
+            <p className="mt-1 text-3xl font-black text-white">{productsData?.totalResults || 0}</p>
           </article>
 
-          <article className="rounded-3xl border border-orange-100 bg-orange-50 p-5">
-            <div className="mb-2 inline-flex rounded-2xl bg-orange-100 p-2 text-orange-700">
+          <article className="rounded-3xl border border-zinc-800 bg-zinc-900/90 p-5 shadow-xl">
+            <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-xl bg-amber-500/10 text-amber-400 font-bold">
               <FiLayers className="text-xl" />
             </div>
-            <p className="text-sm font-semibold text-orange-700">Total Categories</p>
-            <p className="mt-2 text-3xl font-black text-slate-950">{categoriesData?.totalResults || 0}</p>
+            <p className="text-xs font-bold uppercase tracking-wider text-zinc-400">Total Categories</p>
+            <p className="mt-1 text-3xl font-black text-white">{categoriesData?.totalResults || 0}</p>
           </article>
 
-
-          <article className="rounded-3xl border border-orange-100 bg-orange-50 p-5">
-            <div className="mb-2 inline-flex rounded-2xl bg-orange-100 p-2 text-orange-700">
+          <article className="rounded-3xl border border-zinc-800 bg-zinc-900/90 p-5 shadow-xl">
+            <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-xl bg-amber-500/10 text-amber-400 font-bold">
               <FiClock className="text-xl" />
             </div>
-            <p className="text-sm font-semibold text-orange-700">Unavailable</p>
-            <p className="mt-2 text-3xl font-black text-slate-950">{unavailableCount}</p>
+            <p className="text-xs font-bold uppercase tracking-wider text-zinc-400">Unavailable Dishes</p>
+            <p className="mt-1 text-3xl font-black text-white">{unavailableCount}</p>
           </article>
-          <article className="rounded-3xl border border-orange-100 bg-orange-50 p-5">
-            <div className="mb-2 inline-flex rounded-2xl bg-orange-100 p-2 text-orange-700">
-              <FiShoppingBag className="text-xl" />
-            </div>
-            <p className="text-sm font-semibold text-orange-700">Orders Count</p>
-            <p className="mt-2 text-3xl font-black text-slate-950">{statistics.totalOrdersCount || 0}</p>
-          </article>
-           <article className="rounded-3xl border border-orange-100 bg-orange-50 p-5">
-            <div className="mb-2 inline-flex rounded-2xl bg-orange-100 p-2 text-orange-700">
-              <FiShoppingBag className="text-xl" />
-            </div>
-            <p className="text-sm font-semibold text-orange-700">Total Orders price</p>
-            <p className="mt-2 text-3xl font-black text-slate-950">${Number(statistics.totalAllOrdersPrice || 0).toFixed(2)}</p>
-          </article>
-          <article className="rounded-3xl border border-orange-100 bg-orange-50 p-5">
-            <div className="mb-2 inline-flex rounded-2xl bg-orange-100 p-2 text-orange-700">
-              <FiShoppingBag className="text-xl" />
-            </div>
-            <p className="text-sm font-semibold text-orange-700">Total Revenue</p>
-            <p className="mt-2 text-3xl font-black text-slate-950">${Number(statistics.totalRevenue || 0).toFixed(2)}</p>
-          </article>
-         
-  {statistics.byStatus?.map((status) => (
-    <article
-      key={status._id}
-      className="rounded-3xl border border-orange-100 bg-orange-50 p-5"
-    >
-       <div className="mb-2 inline-flex rounded-2xl bg-orange-100 p-2 text-orange-700">
-              <FiShoppingBag className="text-xl" />
-            </div>
-      <p className="text-sm font-semibold text-orange-700">Total price of {status._id}</p>
-      <p className="mt-2 text-3xl font-black text-slate-950">${Number(status.totalPrice || 0).toFixed(2)}</p>
-    </article>
-  ))}
 
-          
+          <article className="rounded-3xl border border-zinc-800 bg-zinc-900/90 p-5 shadow-xl">
+            <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-xl bg-amber-500/10 text-amber-400 font-bold">
+              <FiShoppingBag className="text-xl" />
+            </div>
+            <p className="text-xs font-bold uppercase tracking-wider text-zinc-400">Total Orders</p>
+            <p className="mt-1 text-3xl font-black text-white">{statistics.totalOrdersCount || 0}</p>
+          </article>
+
+          <article className="rounded-3xl border border-zinc-800 bg-zinc-900/90 p-5 shadow-xl">
+            <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-xl bg-amber-500/10 text-amber-400 font-bold">
+              💵
+            </div>
+            <p className="text-xs font-bold uppercase tracking-wider text-zinc-400">All Orders Volume</p>
+            <p className="mt-1 text-3xl font-black text-amber-400">${Number(statistics.totalAllOrdersPrice || 0).toFixed(2)}</p>
+          </article>
+
+          <article className="rounded-3xl border border-zinc-800 bg-zinc-900/90 p-5 shadow-xl">
+            <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-400 font-bold">
+              📈
+            </div>
+            <p className="text-xs font-bold uppercase tracking-wider text-zinc-400">Total Revenue</p>
+            <p className="mt-1 text-3xl font-black text-emerald-400">${Number(statistics.totalRevenue || 0).toFixed(2)}</p>
+          </article>
+
+          {statistics.byStatus?.map((status) => (
+            <article
+              key={status._id}
+              className="rounded-3xl border border-zinc-800 bg-zinc-900/90 p-5 shadow-xl"
+            >
+              <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-xl bg-amber-500/10 text-amber-400 font-bold">
+                <FiShoppingBag className="text-xl" />
+              </div>
+              <p className="text-xs font-bold uppercase tracking-wider text-zinc-400">Total {status._id}</p>
+              <p className="mt-1 text-3xl font-black text-white">${Number(status.totalPrice || 0).toFixed(2)}</p>
+            </article>
+          ))}
         </div>
 
-        <div className="mt-8 grid gap-5 lg:grid-cols-[1fr_1fr]">
-          <article className="rounded-3xl border border-slate-200 bg-white p-5 shadow-[0_14px_32px_rgba(15,23,42,0.06)]">
-            <div className="mb-4 flex items-center justify-between gap-3">
+        {/* Live Activity Feeds */}
+        <div className="mt-8 grid gap-8 lg:grid-cols-2">
+          
+          <article className="rounded-3xl border border-zinc-800 bg-zinc-900/90 p-6 shadow-xl">
+            <div className="mb-4 flex items-center justify-between pb-4 border-b border-zinc-800">
               <div>
-                <p className="text-xs font-bold uppercase tracking-[0.18em] text-orange-600">Catalog</p>
-                <h2 className="mt-1 text-xl font-black text-slate-950">Recent products</h2>
+                <span className="text-[10px] font-bold uppercase tracking-widest text-amber-500">Catalog Preview</span>
+                <h2 className="text-xl font-bold text-white font-serif">Recent Menu Products</h2>
               </div>
-              <FiBox className="text-2xl text-slate-400" />
+              <FiBox className="text-xl text-amber-400" />
             </div>
 
             <div className="space-y-3">
               {recentProducts.map((product) => (
-                <div key={product._id} className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
-                  <div className="flex items-start justify-between gap-3">
+                <div key={product._id} className="rounded-2xl border border-zinc-800 bg-zinc-950 p-4">
+                  <div className="flex items-center justify-between gap-3">
                     <div>
-                      <p className="font-bold text-slate-950">{product.name || "Product"}</p>
-                      <p className="mt-1 text-sm text-slate-500">${Number(product.price || 0).toFixed(2)}</p>
+                      <p className="font-bold text-white text-sm">{product.name || "Product"}</p>
+                      <p className="text-xs text-amber-400 font-black mt-0.5">${Number(product.price || 0).toFixed(2)}</p>
                     </div>
-                    <span className={`rounded-full border px-3 py-1 text-[11px] font-bold uppercase tracking-[0.18em] ${product.available ? "border-emerald-200 bg-emerald-50 text-emerald-700" : "border-rose-200 bg-rose-50 text-rose-700"}`}>
-                      {product.available ? "Available" : "Unavailable"}
+                    <span className={`rounded-full border px-3 py-0.5 text-[10px] font-bold uppercase tracking-wider ${product.available ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-400" : "border-rose-500/30 bg-rose-500/10 text-rose-400"}`}>
+                      {product.available ? "Available" : "Sold Out"}
                     </span>
                   </div>
                 </div>
               ))}
 
               {recentProducts.length === 0 && (
-                <p className="rounded-2xl border border-dashed border-slate-200 bg-slate-50 p-4 text-sm text-slate-500">
-                  No products found.
-                </p>
+                <div className="rounded-2xl border border-dashed border-zinc-800 bg-zinc-950 p-6 text-center text-zinc-500 text-xs">
+                  No products registered yet.
+                </div>
               )}
             </div>
           </article>
 
-          <article className="rounded-3xl border border-slate-200 bg-slate-950 p-5 text-white shadow-[0_14px_32px_rgba(15,23,42,0.12)]">
-            <div className="mb-4 flex items-center justify-between gap-3">
+          <article className="rounded-3xl border border-zinc-800 bg-zinc-900/90 p-6 shadow-xl">
+            <div className="mb-4 flex items-center justify-between pb-4 border-b border-zinc-800">
               <div>
-                <p className="text-xs font-bold uppercase tracking-[0.18em] text-orange-200">Orders</p>
-                <h2 className="mt-1 text-xl font-black">Recent order activity</h2>
+                <span className="text-[10px] font-bold uppercase tracking-widest text-sky-400">Live Queue</span>
+                <h2 className="text-xl font-bold text-white font-serif">Recent Order Activity</h2>
               </div>
-              <FiShoppingBag className="text-2xl text-orange-200" />
+              <FiShoppingBag className="text-xl text-sky-400" />
             </div>
 
             <div className="space-y-3">
@@ -235,34 +238,33 @@ export default function AdminProductsDashboardPage() {
                   : "Customer";
 
                 return (
-                  <div key={order._id} className="rounded-2xl border border-white/10 bg-white/5 p-4">
+                  <div key={order._id} className="rounded-2xl border border-zinc-800 bg-zinc-950 p-4">
                     <div className="flex items-start justify-between gap-3">
                       <div>
-                        <p className="font-bold text-white">{customer}</p>
-                        <p className="mt-1 text-sm text-slate-300">
-                          {order.items?.length || 0} items • ${Number(order.totalAmount || 0).toFixed(2)}
+                        <p className="font-bold text-white text-sm">{customer}</p>
+                        <p className="text-xs text-zinc-400 mt-0.5">
+                          {order.items?.length || 0} items • <span className="text-amber-400 font-bold">${Number(order.totalAmount || 0).toFixed(2)}</span>
                         </p>
                       </div>
-                      <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[11px] font-bold uppercase tracking-[0.18em] text-orange-200">
+                      <span className="rounded-full border border-sky-500/30 bg-sky-500/10 px-3 py-0.5 text-[10px] font-bold uppercase tracking-wider text-sky-400">
                         {order.status || "pending"}
                       </span>
                     </div>
-                    <p className="mt-3 text-[11px] text-slate-400">
-                      {order.createdAt ? new Date(order.createdAt).toLocaleString() : "Recent order"}
-                    </p>
                   </div>
                 );
               })}
 
               {recentOrders.length === 0 && (
-                <p className="rounded-2xl border border-dashed border-white/15 bg-white/5 p-4 text-sm text-slate-300">
-                  No orders found.
-                </p>
+                <div className="rounded-2xl border border-dashed border-zinc-800 bg-zinc-950 p-6 text-center text-zinc-500 text-xs">
+                  No orders recorded.
+                </div>
               )}
             </div>
           </article>
+
         </div>
       </section>
     </div>
   );
 }
+
